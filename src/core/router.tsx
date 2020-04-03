@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   BrowserRouter as Router,
   Route,
@@ -90,7 +90,31 @@ export const AppRouter: React.FC = () => {
 
 export const MainRoute = observer<MainRouteProps>(
   ({ path, children, ...rest }) => {
-    const { authStore } = useStores();
+    const { authStore, snackbarStore } = useStores();
+    const history = useHistory();
+
+    useEffect(() => {
+      const initStores = async () => {
+        try {
+          if (authStore.isAuthenticated) {
+            await authStore.init();
+          }
+        } catch (error) {
+          if (error.response) {
+            switch (error.response.status) {
+              case 401:
+                snackbarStore.sendMessage({
+                  message: 'You are not logged In',
+                  type: 'error',
+                });
+                history.push('/login');
+                break;
+            }
+          }
+        }
+      };
+      initStores();
+    }, [authStore, snackbarStore]);
 
     return (
       <Route path={path} {...rest}>

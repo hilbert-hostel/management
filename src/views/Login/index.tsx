@@ -162,29 +162,6 @@ export const Login: React.FC = observer(() => {
               >
                 Login
               </Button>
-              <Box width="100%" alignItems="center">
-                <Typography
-                  variant="body1"
-                  className={classes.text}
-                  align="center"
-                >
-                  Have no account yet ?
-                </Typography>
-                <Typography
-                  color="primary"
-                  align="center"
-                  href={
-                    '/register' +
-                    (query.get('returnTo')
-                      ? '?returnTo=' + query.get('returnTo')
-                      : '')
-                  }
-                  component="a"
-                  className={classes.toRegister}
-                >
-                  Register
-                </Typography>
-              </Box>
             </Box>
           </form>
         </Container>

@@ -12,11 +12,12 @@ export const App: React.FC<AppProps> = observer(() => {
   const { themeStore, authStore } = useStores();
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
   const [localDarkMode] = useLocalStorage<boolean>('dark', prefersDarkMode);
-
   useEffect(() => {
     const initStores = async () => {
       try {
-        await authStore.init();
+        if (authStore.isAuthenticated) {
+          await authStore.init();
+        }
       } catch (error) {
         if (error.response) {
           switch (error.response.status) {

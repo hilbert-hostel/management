@@ -18,6 +18,7 @@ import {
 import { observer } from 'mobx-react-lite';
 import { useStores } from '../../hooks/use-stores';
 import { CustomLink } from '../CustomLink';
+import { useHistory } from 'react-router-dom';
 
 const drawerWidth = 320;
 
@@ -64,6 +65,12 @@ export const PermanentDrawer = observer(() => {
   const classes = useStyles();
   const { authStore } = useStores();
   const user = authStore.user;
+  const history = useHistory();
+
+  const logout = () => {
+    authStore.logout();
+    history.push('/login');
+  };
 
   return (
     <Drawer
@@ -138,6 +145,7 @@ export const PermanentDrawer = observer(() => {
         variant="contained"
         color="primary"
         className={classes.logoutButton}
+        onClick={() => logout()}
       >
         Logout
       </Button>
