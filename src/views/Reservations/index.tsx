@@ -18,11 +18,12 @@ import { ReservationTable } from './components/ReservationTable';
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
-      height: '100%',
+      minHeight: '100%',
       flexGrow: 1,
-      backgroundSize: 'cover',
-      backgroundPosition: 'center',
-      position: 'relative',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'stretch',
+      justifyContent: 'stretch',
     },
     title: {
       marginBottom: theme.spacing(6),
@@ -32,9 +33,11 @@ const useStyles = makeStyles((theme: Theme) =>
       padding: theme.spacing(2),
       zIndex: 5,
     },
-    content: {
-      paddingTop: theme.spacing(3),
-      height: '100%',
+    content: {},
+    scrollWrapper: {
+      flexWrap: 'nowrap',
+      overflowX: 'auto',
+      width: 'calc(100vw - 280px)',
     },
   })
 );
@@ -45,21 +48,26 @@ export const Reservations: React.FC = observer(() => {
   const { authStore } = useStores();
   return (
     <>
-      <AppBar position="static" color="default">
-        <Toolbar>
-          <Typography variant="h4">Reservations</Typography>
-        </Toolbar>
-      </AppBar>
-      <Box
-        className={classes.root}
-        flexDirection="column"
-        justifyContent="center"
-        display="flex"
-      >
-        <Container maxWidth="lg" className={classes.content}>
-          <ReservationTable />
-        </Container>
-      </Box>
+      <div className={classes.root}>
+        <AppBar position="static" color="default">
+          <Toolbar>
+            <Typography variant="h4">Reservations</Typography>
+          </Toolbar>
+        </AppBar>
+        <Box
+          flexGrow={1}
+          height="100%"
+          className={classes.content}
+          paddingTop={3}
+          display="flex"
+          alignItems="stretch"
+          justifyContent="stretch"
+        >
+          <div className={classes.scrollWrapper}>
+            <ReservationTable />
+          </div>
+        </Box>
+      </div>
     </>
   );
 });

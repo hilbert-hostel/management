@@ -201,12 +201,8 @@ const useStyles = makeStyles((theme: Theme) =>
     root: {
       height: '100%',
       flexGrow: 1,
-      backgroundSize: 'cover',
-      backgroundPosition: 'center',
-      position: 'relative',
-    },
-    title: {
-      marginBottom: theme.spacing(6),
+      minWidth: 'fit-content',
+      padding: theme.spacing(2),
     },
     button: {
       marginBottom: theme.spacing(2),
@@ -221,7 +217,8 @@ const useStyles = makeStyles((theme: Theme) =>
       display: 'grid',
       gridAutoFlow: 'row dense', /////
       minHeight: '40vh',
-      minWidth: '60vw',
+      minWidth: 'max(60vw, 1024px)',
+      width: '100%',
       backgroundColor: theme.palette.divider,
     },
     dates: {
@@ -244,7 +241,6 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     reservations: {
       padding: '5px',
-      width: '100%',
     },
     noLeft: {
       clipPath: 'polygon(0 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%)',
@@ -280,8 +276,14 @@ export const ReservationTable: React.FC = () => {
     });
 
   const getCoordinate = (reservation: any) => {
-    const start = moment(reservation.checkIn).diff(startWeek, 'days') + 2;
-    const end = moment(reservation.checkOut).diff(startWeek, 'days') + 3;
+    const start =
+      moment(reservation.checkIn).diff(startWeek, 'days') < 0
+        ? 1
+        : moment(reservation.checkIn).diff(startWeek, 'days') + 1;
+    const end =
+      moment(reservation.checkOut).diff(startWeek, 'days') > 7
+        ? 7
+        : moment(reservation.checkOut).diff(startWeek, 'days') + 1;
     return {
       gridColumnStart: start,
       gridColumnEnd: end,
@@ -291,7 +293,7 @@ export const ReservationTable: React.FC = () => {
   return (
     <>
       <Box className={classes.root} flexDirection="column" display="flex">
-        <Paper>
+        <Paper style={{ width: '100%' }}>
           <Box
             className={classes.root}
             flexDirection="column"
@@ -300,8 +302,8 @@ export const ReservationTable: React.FC = () => {
             padding={1}
           >
             <Box width="100%">
-              <Typography variant="h6">
-                {moment().format('MMMM YYYY')}
+              <Typography variant="h6" gutterBottom>
+                {startWeek.format('MMMM YYYY')}
               </Typography>
             </Box>
             <div
@@ -311,7 +313,7 @@ export const ReservationTable: React.FC = () => {
                   (p, c) => 1 + p + c.rooms.length,
                   0
                 )}, min(16px, 1fr))`,
-                gridTemplateColumns: `[header] 2fr repeat(${MAX_DATES}, min(100px, 1fr))`,
+                gridTemplateColumns: `[header] 2fr repeat(${MAX_DATES}, minmax(60px, 1fr))`,
               }}
             >
               <div
@@ -373,9 +375,11 @@ export const ReservationTable: React.FC = () => {
                             style={{
                               gridColumn: '2 / 9',
                               display: 'grid',
-                              gridRowGap: '10px',
+                              gridRowGap: '5px',
                               gridAutoFlow: 'row dense',
-                              gridTemplateColumns: `repeat(${MAX_DATES}, min(200px, 1fr))`,
+                              alignItems: 'center',
+                              justifyItems: 'stretch',
+                              gridTemplateColumns: `repeat(7, minmax(60px, 1fr))`,
                             }}
                           >
                             {reservations

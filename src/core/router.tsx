@@ -24,7 +24,6 @@ const useStyles = makeStyles((theme: Theme) =>
     root: {
       backgroundColor: theme.palette.background.default,
       minHeight: '100vh',
-      maxWidth: '100vw',
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'stretch',
@@ -120,7 +119,7 @@ export const MainRoute = observer<MainRouteProps>(
       <Route path={path} {...rest}>
         <Box width="100%" display="flex" alignItems="stretch">
           <PermanentDrawer />
-          <Box width="100%">
+          <Box width="100%" flexGrow={1}>
             {!authStore.isAuthenticated ? <Redirect to="/login" /> : children}
           </Box>
         </Box>
