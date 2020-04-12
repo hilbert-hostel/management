@@ -14,7 +14,10 @@ import {
   Box,
   Avatar,
   Button,
+  ListItemSecondaryAction,
+  Switch,
 } from '@material-ui/core';
+import DarkModeIcon from '@material-ui/icons/SettingsBrightness';
 import { observer } from 'mobx-react-lite';
 import { useStores } from '../../hooks/use-stores';
 import { CustomLink } from '../CustomLink';
@@ -63,7 +66,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export const PermanentDrawer = observer(() => {
   const classes = useStyles();
-  const { authStore } = useStores();
+  const { authStore, themeStore } = useStores();
   const user = authStore.user;
   const history = useHistory();
 
@@ -138,6 +141,20 @@ export const PermanentDrawer = observer(() => {
               </ListItemIcon>
               <ListItemText primary="Door unlock" />
             </CustomLink>
+          </ListItem>
+          <ListItem>
+            <ListItemIcon>
+              <DarkModeIcon />
+            </ListItemIcon>
+            <ListItemText id="dark-theme-switch" primary="Dark Theme" />
+            <ListItemSecondaryAction>
+              <Switch
+                edge="end"
+                color="primary"
+                onChange={() => themeStore.setDarkMode(!themeStore.dark)}
+                checked={themeStore.dark}
+              />
+            </ListItemSecondaryAction>
           </ListItem>
         </List>
       </Box>

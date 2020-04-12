@@ -8,9 +8,12 @@ import {
   Typography,
   Button,
   Box,
+  AppBar,
+  Toolbar,
 } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
 import { useStores } from '../../core/hooks/use-stores';
+import { ReservationTable } from './components/ReservationTable';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -41,15 +44,22 @@ export const Reservations: React.FC = observer(() => {
   const history = useHistory();
   const { authStore } = useStores();
   return (
-    <Box
-      className={classes.root}
-      flexDirection="column"
-      justifyContent="center"
-      display="flex"
-    >
-      <Container maxWidth="lg" className={classes.content}>
-        <Typography variant="h4">Reservations</Typography>
-      </Container>
-    </Box>
+    <>
+      <AppBar position="static" color="default">
+        <Toolbar>
+          <Typography variant="h4">Reservations</Typography>
+        </Toolbar>
+      </AppBar>
+      <Box
+        className={classes.root}
+        flexDirection="column"
+        justifyContent="center"
+        display="flex"
+      >
+        <Container maxWidth="lg" className={classes.content}>
+          <ReservationTable />
+        </Container>
+      </Box>
+    </>
   );
 });
