@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { observer } from 'mobx-react-lite';
 import {
   createStyles,
@@ -15,6 +15,7 @@ import {
 import { useHistory } from 'react-router-dom';
 import { useStores } from '../../core/hooks/use-stores';
 import MaterialTable from 'material-table';
+import { BackendAPI } from '../../core/repository/api/backend';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -44,17 +45,21 @@ export const Customers: React.FC = observer(() => {
   const classes = useStyles();
   const history = useHistory();
   const { authStore } = useStores();
+  const [data, setData] = useState();
 
-  const data = Array(10)
-    .fill({
-      id: 'cbf00d4e-b2cc-453e-a433-74fb555f63a6',
-      email: 'yamarashi@email.com',
-      fullname: 'F W',
-      address: 'here',
-      phone: '000000000',
-      national_id: '111111111111',
-    })
-    .map((e, i) => ({ ...e, id: i }));
+  useEffect(() => {
+    BackendAPI.guests().then(res => {
+      setData(
+        res.data.map(e => {
+          return {
+            ...e,
+            fullname: e.firstname + ' ' + e.lastname,
+          };
+        })
+      );
+    });
+  }, []);
+
   return (
     <>
       <AppBar position="static" color="default">
@@ -77,7 +82,7 @@ export const Customers: React.FC = observer(() => {
               { title: 'Phone', field: 'phone' },
               {
                 title: 'National ID',
-                field: 'national_id',
+                field: 'nationalID',
               },
             ]}
             data={data}

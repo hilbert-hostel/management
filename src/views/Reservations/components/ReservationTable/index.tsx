@@ -13,188 +13,20 @@ import {
   Paper,
 } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
-import moment from 'moment';
+import moment, { Moment } from 'moment';
 import { grey } from '@material-ui/core/colors';
+import { RoomTypeResult } from '../../../../core/models/room';
+import {
+  ReservationResponse,
+  ReservationStatusResponse,
+} from '../../../../core/models/reservation';
+
+import IconButton from '@material-ui/core/IconButton';
+import ArrowIcon from '@material-ui/icons/ExpandLess';
+import TodayIcon from '@material-ui/icons/Today';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 const MAX_DATES = 7;
-
-const rooms = [
-  {
-    price: 600,
-    description:
-      'Private room with twin-size bed with 6 beds in a row. Comprising more security, social life, showers, and room with multiple bunks. There is air conditioning provided in every room. Also, a private bathroom and free wifi.',
-    photos: [
-      {
-        photo_url:
-          'https://www.myboutiquehotel.com/photos/106370/room-17553924-840x460.jpg',
-        photo_description: null,
-      },
-    ],
-    facilities: [
-      { name: 'towel', description: 'per person', count: 1 },
-      { name: 'soap', description: 'per person per night', count: 2 },
-      { name: 'shampoo', description: 'per person per night', count: 2 },
-      {
-        name: 'bottled water',
-        description: 'per person per night',
-        count: 1,
-      },
-      { name: 'air conditioner', description: null, count: 1 },
-      { name: 'wifi', description: null, count: 1 },
-      { name: 'breakfast included', description: null, count: 1 },
-      { name: 'refundable', description: null, count: 1 },
-    ],
-    rooms: [
-      { id: 1, available: 6 },
-      { id: 2, available: 6 },
-      { id: 3, available: 5 },
-    ],
-    type: 'mixed-dorm-s',
-  },
-  {
-    price: 600,
-    description:
-      'Private room with twin-size bed with 10 beds in a row. Comprising more security, social life, showers, and room with multiple bunks. There is air conditioning provided in every room. Also, a private bathroom and free wifi.',
-    photos: [
-      {
-        photo_url:
-          'https://www.myboutiquehotel.com/photos/106370/room-17553924-840x460.jpg',
-        photo_description: null,
-      },
-    ],
-    facilities: [
-      { name: 'breakfast included', description: null, count: 1 },
-      { name: 'wifi', description: null, count: 1 },
-      { name: 'air conditioner', description: null, count: 1 },
-      {
-        name: 'bottled water',
-        description: 'per person per night',
-        count: 1,
-      },
-      { name: 'shampoo', description: 'per person per night', count: 2 },
-      { name: 'soap', description: 'per person per night', count: 2 },
-      { name: 'towel', description: 'per person', count: 1 },
-      { name: 'refundable', description: null, count: 1 },
-    ],
-    rooms: [
-      { id: 4, available: 10 },
-      { id: 5, available: 9 },
-    ],
-    type: 'mixed-dorm-m',
-  },
-  {
-    price: 600,
-    description:
-      'Private room with twin-size bed with 15 beds in a row. Comprising more security, social life, showers, and room with multiple bunks. There is air conditioning provided in every room. Also, a private bathroom and free wifi.',
-    photos: [
-      {
-        photo_url:
-          'https://www.myboutiquehotel.com/photos/106370/room-17553924-840x460.jpg',
-        photo_description: null,
-      },
-    ],
-    facilities: [
-      { name: 'breakfast included', description: null, count: 1 },
-      { name: 'wifi', description: null, count: 1 },
-      { name: 'air conditioner', description: null, count: 1 },
-      {
-        name: 'bottled water',
-        description: 'per person per night',
-        count: 1,
-      },
-      { name: 'shampoo', description: 'per person per night', count: 2 },
-      { name: 'soap', description: 'per person per night', count: 2 },
-      { name: 'towel', description: 'per person', count: 1 },
-      { name: 'refundable', description: null, count: 1 },
-    ],
-    rooms: [{ id: 6, available: 11 }],
-    type: 'mixed-dorm',
-  },
-  {
-    price: 600,
-    description:
-      'Private room with twin-size bed with 15 beds in a row. Comprising more security, social life, showers, and room with multiple bunks. There is air conditioning provided in every room. Also, a private bathroom and free wifi.',
-    photos: [
-      {
-        photo_url:
-          'https://www.myboutiquehotel.com/photos/106370/room-17553924-840x460.jpg',
-        photo_description: null,
-      },
-    ],
-    facilities: [
-      { name: 'soap', description: 'per person per night', count: 2 },
-      { name: 'towel', description: 'per person', count: 1 },
-      { name: 'shampoo', description: 'per person per night', count: 2 },
-      {
-        name: 'bottled water',
-        description: 'per person per night',
-        count: 1,
-      },
-      { name: 'air conditioner', description: null, count: 1 },
-      { name: 'wifi', description: null, count: 1 },
-      { name: 'breakfast included', description: null, count: 1 },
-      { name: 'refundable', description: null, count: 1 },
-    ],
-    rooms: [{ id: 7, available: 15 }],
-    type: 'mixed-dorm-l',
-  },
-  {
-    price: 650,
-    description:
-      'Private women room with queen-size bed with 10 beds in a row. Comprising more social life, showers, room with multiple bunks and lastly, security for women. There is air conditioning provided in every room. Also, a private bathroom and free wifi.',
-    photos: [
-      {
-        photo_url:
-          'https://a0.muscache.com/im/pictures/109451542/8989b537_original.jpg?aki_policy=large',
-        photo_description: null,
-      },
-    ],
-    facilities: [
-      { name: 'towel', description: 'per person', count: 1 },
-      { name: 'soap', description: 'per person per night', count: 2 },
-      { name: 'shampoo', description: 'per person per night', count: 2 },
-      {
-        name: 'bottled water',
-        description: 'per person per night',
-        count: 1,
-      },
-      { name: 'air conditioner', description: null, count: 1 },
-      { name: 'wifi', description: null, count: 1 },
-      { name: 'breakfast included', description: null, count: 1 },
-      { name: 'refundable', description: null, count: 1 },
-    ],
-    rooms: [{ id: 8, available: 10 }],
-    type: 'women-dorm-m',
-  },
-  {
-    price: 650,
-    description:
-      'Private women room with queen-size bed with 10 beds in a row. Comprising more social life, showers, room with multiple bunks and lastly, security for women. There is air conditioning provided in every room. Also, a private bathroom and free wifi.',
-    photos: [
-      {
-        photo_url:
-          'https://a0.muscache.com/im/pictures/109451542/8989b537_original.jpg?aki_policy=large',
-        photo_description: null,
-      },
-    ],
-    facilities: [
-      { name: 'towel', description: 'per person', count: 1 },
-      { name: 'soap', description: 'per person per night', count: 2 },
-      { name: 'shampoo', description: 'per person per night', count: 2 },
-      {
-        name: 'bottled water',
-        description: 'per person per night',
-        count: 1,
-      },
-      { name: 'air conditioner', description: null, count: 1 },
-      { name: 'wifi', description: null, count: 1 },
-      { name: 'breakfast included', description: null, count: 1 },
-      { name: 'refundable', description: null, count: 1 },
-    ],
-    rooms: [{ id: 9, available: 20 }],
-    type: 'women-dorm-l',
-  },
-];
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -240,7 +72,7 @@ const useStyles = makeStyles((theme: Theme) =>
       clipPath: 'polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%)',
     },
     reservations: {
-      padding: '5px',
+      // padding: '5px',
     },
     noLeft: {
       clipPath: 'polygon(0 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%)',
@@ -254,26 +86,15 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-export const ReservationTable: React.FC = () => {
+export const ReservationTable: React.FC<ReservationTableProps> = ({
+  date: startWeek,
+  reservations,
+  rooms,
+  onChangeDate,
+  isLoading = false,
+}) => {
   const classes = useStyles();
   const history = useHistory();
-  const [startWeek, setStartWeeek] = useState(moment().startOf('week'));
-
-  const reservations = Array(24)
-    .fill(null)
-    .map((_, i) => {
-      const startDay = startWeek
-        .clone()
-        .add(Math.round(Math.random() * 9 - 1), 'days');
-      return {
-        id: i,
-        bedid: Math.ceil(i / 2),
-        checkIn: startDay,
-        checkOut: startDay
-          .clone()
-          .add(Math.round(Math.random() * 2 + 1), 'days'),
-      };
-    });
 
   const getCoordinate = (reservation: any) => {
     const start =
@@ -301,10 +122,47 @@ export const ReservationTable: React.FC = () => {
             display="flex"
             padding={1}
           >
-            <Box width="100%">
-              <Typography variant="h6" gutterBottom>
-                {startWeek.format('MMMM YYYY')}
+            <Box width="100%" display="flex" alignItems="center">
+              <IconButton
+                aria-label="Go to week before"
+                style={{ transform: 'rotate(-90deg)' }}
+                onClick={() =>
+                  onChangeDate &&
+                  onChangeDate(startWeek.clone().subtract(1, 'week'))
+                }
+              >
+                <ArrowIcon />
+              </IconButton>
+              <Typography variant="h6">
+                {startWeek.format('DD MMMM YYYY')} -{' '}
+                {startWeek
+                  .clone()
+                  .endOf('isoWeek')
+                  .format('DD MMMM YYYY')}
               </Typography>
+              <IconButton
+                aria-label="Go to next week"
+                style={{ transform: 'rotate(90deg)' }}
+                onClick={() =>
+                  onChangeDate && onChangeDate(startWeek.clone().add(1, 'week'))
+                }
+              >
+                <ArrowIcon />
+              </IconButton>
+              <IconButton
+                aria-label="Go to next week"
+                onClick={() =>
+                  onChangeDate && onChangeDate(moment().startOf('isoWeek'))
+                }
+              >
+                <TodayIcon />
+              </IconButton>
+              {isLoading && (
+                <Box display="flex" alignItems="center">
+                  <CircularProgress size={20} style={{ marginRight: '8px' }} />
+                  <Typography variant="body1">Loading...</Typography>
+                </Box>
+              )}
             </Box>
             <div
               className={classes.table}
@@ -383,7 +241,9 @@ export const ReservationTable: React.FC = () => {
                             }}
                           >
                             {reservations
-                              .filter(e => e.bedid === room.id)
+                              .filter(e =>
+                                e.rooms.map(e => e.id).includes(room.id)
+                              )
                               .map(reservation => {
                                 return (
                                   <div
@@ -393,14 +253,16 @@ export const ReservationTable: React.FC = () => {
                                     <div
                                       className={`${classes.reservationBlock} 
                                     ${
-                                      reservation.checkIn.isBefore(startWeek)
-                                        ? reservation.checkOut.isAfter(
-                                            startWeek.clone().endOf('week')
+                                      moment(reservation.checkIn).isBefore(
+                                        startWeek
+                                      )
+                                        ? moment(reservation.checkIn).isAfter(
+                                            startWeek.clone().endOf('isoWeek')
                                           )
                                           ? classes.noSlope
                                           : classes.noLeft
-                                        : reservation.checkOut.isAfter(
-                                            startWeek.clone().endOf('week')
+                                        : moment(reservation.checkIn).isAfter(
+                                            startWeek.clone().endOf('isoWeek')
                                           )
                                         ? classes.noRight
                                         : ''
@@ -412,7 +274,8 @@ export const ReservationTable: React.FC = () => {
                                         variant="body2"
                                         align="center"
                                       >
-                                        Reservation {reservation.id}
+                                        {reservation.guest.firstname}{' '}
+                                        {reservation.guest.lastname[0]}.
                                       </Typography>
                                     </div>
                                   </div>
@@ -432,3 +295,11 @@ export const ReservationTable: React.FC = () => {
     </>
   );
 };
+
+export interface ReservationTableProps {
+  date: Moment;
+  rooms: RoomTypeResult[];
+  reservations: ReservationStatusResponse[];
+  onChangeDate?: (date: Moment) => void;
+  isLoading: boolean;
+}

@@ -13,7 +13,7 @@ export interface RoomTypeResult {
   description: string;
   photos: RoomPhoto[];
   facilities: { name: string; description?: string; count: number }[];
-  availability: { id: number; available: number }[];
+  rooms: { id: number; beds: { id: string }[] }[];
   type: string;
 }
 

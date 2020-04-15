@@ -6,6 +6,9 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import Divider from '@material-ui/core/Divider';
 import ListItemText from '@material-ui/core/ListItemText';
 import PersonIcon from '@material-ui/icons/Person';
+import CalendarIcon from '@material-ui/icons/CalendarToday';
+import CheckInIcon from '@material-ui/icons/HowToReg';
+import DoorIcon from '@material-ui/icons/MeetingRoom';
 import {
   makeStyles,
   createStyles,
@@ -121,7 +124,7 @@ export const PermanentDrawer = observer(() => {
           <ListItem button key="reservation">
             <CustomLink to="/reservations">
               <ListItemIcon>
-                <PersonIcon />
+                <CalendarIcon />
               </ListItemIcon>
               <ListItemText primary="Reservation" />
             </CustomLink>
@@ -129,7 +132,7 @@ export const PermanentDrawer = observer(() => {
           <ListItem button key="check-in-status">
             <CustomLink to="/check-in-status">
               <ListItemIcon>
-                <PersonIcon />
+                <CheckInIcon />
               </ListItemIcon>
               <ListItemText primary="Check-in/Check-out" />
             </CustomLink>
@@ -137,7 +140,7 @@ export const PermanentDrawer = observer(() => {
           <ListItem button key="doorunlock">
             <CustomLink to="/door-unlock">
               <ListItemIcon>
-                <PersonIcon />
+                <DoorIcon />
               </ListItemIcon>
               <ListItemText primary="Door unlock" />
             </CustomLink>

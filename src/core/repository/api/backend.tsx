@@ -9,6 +9,7 @@ import {
   ReservationStatusResponse,
   ReservationPaymentStatusResponse,
 } from '../../models/reservation';
+import { User } from '../../models/user';
 
 export let client: AxiosClient;
 
@@ -23,35 +24,24 @@ export class BackendAPI {
     return client.get<{ message: string }>('/ping');
   }
   static authPing() {
-    return client.get<AuthPayload>('/auth/ping');
+    return client.get<AuthPayload>('/admin/ping');
   }
   static login(data: LoginModel) {
-    return client.post<AuthPayload>('/auth/login', data);
-  }
-  static register(data: RegistrationModel) {
-    return client.post<AuthPayload>('/auth/register', data);
+    return client.post<AuthPayload>('/admin/login', data);
   }
 
-  static searchRooms(data: RoomSearchPayload) {
-    return client.get<RoomTypeResult[]>('/reservation', { params: data });
+  static rooms() {
+    return client.get<RoomTypeResult[]>('/admin/room');
   }
 
-  static reservations() {
-    return client.get<ReservationStatusResponse[]>('/reservation/all');
+  static reservations(params: { from: string; to: string }) {
+    return client.get<ReservationStatusResponse[]>('/admin/reservation', {
+      params,
+    });
   }
 
-  static reserve(data: ReservationPayload) {
-    return client.post<ReservationResponse>('/reservation', data);
-  }
-
-  static reservationStatus(id: string) {
-    return client.get<ReservationStatusResponse>('/reservation/' + id);
-  }
-
-  static paymentStatus(id: string) {
-    return client.get<ReservationPaymentStatusResponse>(
-      '/reservation/' + id + '/payment'
-    );
+  static guests() {
+    return client.get<User[]>('/admin/guest');
   }
 
   static openDoor() {

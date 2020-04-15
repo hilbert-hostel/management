@@ -72,6 +72,7 @@ export const Login: React.FC = observer(() => {
       try {
         const res = await BackendAPI.login(values);
         authStore.setToken(res.data.token);
+        authStore.setUser(res.data.user);
         history.push(query.get('returnTo') || '/');
       } catch (error) {
         switch (error.response.status) {

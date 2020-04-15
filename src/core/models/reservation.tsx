@@ -1,4 +1,5 @@
 import { RoomPhoto } from './room';
+import { User } from './user';
 
 export interface ReservationPayload {
   checkIn: string;
@@ -27,6 +28,7 @@ export interface Reservation {
   id: string;
   checkIn: Date;
   checkOut: Date;
+  guest: User;
   rooms: {
     id: number;
     price: number;
