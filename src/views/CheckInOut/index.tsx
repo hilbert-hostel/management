@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { observer } from 'mobx-react-lite';
 import {
   createStyles,
@@ -6,15 +6,15 @@ import {
   Theme,
   Container,
   Typography,
-  Button,
   Box,
-  Paper,
-  Toolbar,
-  AppBar,
 } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
 import { useStores } from '../../core/hooks/use-stores';
-import MaterialTable from 'material-table';
+import MaterialTable, { MTableToolbar } from 'material-table';
+import { CheckInEntry, CheckOutEntry } from '../../core/models/checkinout';
+import { BackendAPI } from '../../core/repository/api/backend';
+import moment from 'moment';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -44,24 +44,27 @@ export const CheckInOut: React.FC = observer(() => {
   const classes = useStyles();
   const history = useHistory();
   const { authStore } = useStores();
+  const [isLoading, setLoading] = useState(false);
+  const [checkIn, setCheckIn] = useState<CheckInEntry[]>([]);
+  const [checkOut, setCheckOut] = useState<CheckOutEntry[]>([]);
 
-  const data = Array(10)
-    .fill({
-      id: 'cbf00d4e-b2cc-453e-a433-74fb555f63a6',
-      email: 'yamarashi@email.com',
-      fullname: 'F W',
-      address: 'here',
-      phone: '000000000',
-      national_id: '111111111111',
-    })
-    .map((e, i) => ({ ...e, id: i }));
+  useEffect(() => {
+    setLoading(true);
+    BackendAPI.checkInOut().then(res => {
+      setLoading(false);
+      const { checkIn, checkOut } = res.data;
+      setCheckIn(checkIn);
+      setCheckOut(checkOut);
+    });
+  }, []);
+
   return (
     <>
-      <AppBar position="static" color="default">
+      {/* <AppBar position="static" color="default">
         <Toolbar>
           <Typography variant="h4">Check In/ Check Out</Typography>
         </Toolbar>
-      </AppBar>
+      </AppBar> */}
       <Box
         className={classes.root}
         flexDirection="column"
@@ -70,24 +73,84 @@ export const CheckInOut: React.FC = observer(() => {
       >
         <Container maxWidth="lg" className={classes.content}>
           <MaterialTable
+            components={{
+              Toolbar: props => {
+                return (
+                  <>
+                    <MTableToolbar {...props} />
+                    {isLoading && (
+                      <Box display="flex" alignItems="center" paddingLeft={2}>
+                        <CircularProgress
+                          size={20}
+                          style={{ marginRight: '8px' }}
+                        />
+                        <Typography variant="body1">Loading...</Typography>
+                      </Box>
+                    )}
+                  </>
+                );
+              },
+            }}
             columns={[
-              { title: 'Fullname', field: 'fullname' },
-              { title: 'Email', field: 'email' },
-              { title: 'Address', field: 'address' },
-              { title: 'Phone', field: 'phone' },
+              { title: 'Room', field: 'fullname' },
+              { title: 'Guest', field: 'guest.firstname' },
+              { title: 'Nights', field: 'nights' },
               {
-                title: 'National ID',
-                field: 'national_id',
+                title: 'Check In Time',
+                field: 'checkInTime',
+                render: data => (
+                  <>{moment(data.checkInTime).format('DD/MM/YYYY HH:mm')}</>
+                ),
               },
             ]}
-            data={data}
-            title=" "
+            data={checkIn}
+            title="Check In"
             options={{
               selection: true,
-              pageSize: 10,
-              pageSizeOptions: [5, 10],
+              pageSize: 6,
             }}
           />
+          <br />
+          <MaterialTable
+            components={{
+              Toolbar: props => {
+                return (
+                  <>
+                    <MTableToolbar {...props} />
+                    {isLoading && (
+                      <Box display="flex" alignItems="center" paddingLeft={2}>
+                        <CircularProgress
+                          size={20}
+                          style={{ marginRight: '8px' }}
+                        />
+                        <Typography variant="body1">Loading...</Typography>
+                      </Box>
+                    )}
+                  </>
+                );
+              },
+            }}
+            columns={[
+              { title: 'Room', field: 'fullname' },
+              { title: 'Guest', field: 'guest.firstname' },
+              { title: 'Nights', field: 'nights' },
+              {
+                title: 'Check Out Time',
+                field: 'checkOutTime',
+                render: data => (
+                  <>{moment(data.checkOutTime).format('DD/MM/YYYY HH:mm')}</>
+                ),
+              },
+              { title: 'Phone', field: 'phone' },
+            ]}
+            data={checkOut}
+            title="Check Out"
+            options={{
+              selection: true,
+              pageSize: 6,
+            }}
+          />
+          <br />
         </Container>
       </Box>
     </>

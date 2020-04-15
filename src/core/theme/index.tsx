@@ -1,5 +1,5 @@
 import { ThemeOptions } from '@material-ui/core/styles/createMuiTheme';
-import { orange, yellow } from '@material-ui/core/colors';
+import { orange, yellow, blue } from '@material-ui/core/colors';
 
 export const themeConfig: ThemeOptions = {
   overrides: {
@@ -13,7 +13,7 @@ export const themeConfig: ThemeOptions = {
   },
   palette: {
     primary: orange,
-    secondary: yellow,
+    secondary: blue,
   },
   shape: {
     borderRadius: 10,

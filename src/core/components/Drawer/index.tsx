@@ -64,6 +64,12 @@ const useStyles = makeStyles((theme: Theme) =>
       padding: theme.spacing(2),
       borderRadius: 0,
     },
+    selected: {
+      color: theme.palette.primary.dark,
+      '& svg': {
+        color: theme.palette.primary.dark,
+      },
+    },
   })
 );
 
@@ -113,7 +119,13 @@ export const PermanentDrawer = observer(() => {
       </Box>
       <Box flexGrow={1} width="100%">
         <List>
-          <ListItem button key="customer">
+          <ListItem
+            button
+            key="customer"
+            className={
+              history.location.pathname === '/customers' ? classes.selected : ''
+            }
+          >
             <CustomLink to="/customers">
               <ListItemIcon>
                 <PersonIcon />
@@ -121,7 +133,15 @@ export const PermanentDrawer = observer(() => {
               <ListItemText color="pirmary" primary="Customer" />
             </CustomLink>
           </ListItem>
-          <ListItem button key="reservation">
+          <ListItem
+            button
+            key="reservation"
+            className={
+              history.location.pathname === '/reservations'
+                ? classes.selected
+                : ''
+            }
+          >
             <CustomLink to="/reservations">
               <ListItemIcon>
                 <CalendarIcon />
@@ -129,7 +149,15 @@ export const PermanentDrawer = observer(() => {
               <ListItemText primary="Reservation" />
             </CustomLink>
           </ListItem>
-          <ListItem button key="check-in-status">
+          <ListItem
+            button
+            key="check-in-status"
+            className={
+              history.location.pathname === '/check-in-status'
+                ? classes.selected
+                : ''
+            }
+          >
             <CustomLink to="/check-in-status">
               <ListItemIcon>
                 <CheckInIcon />
@@ -137,7 +165,15 @@ export const PermanentDrawer = observer(() => {
               <ListItemText primary="Check-in/Check-out" />
             </CustomLink>
           </ListItem>
-          <ListItem button key="doorunlock">
+          <ListItem
+            button
+            key="doorunlock"
+            className={
+              history.location.pathname === '/door-unlock'
+                ? classes.selected
+                : ''
+            }
+          >
             <CustomLink to="/door-unlock">
               <ListItemIcon>
                 <DoorIcon />

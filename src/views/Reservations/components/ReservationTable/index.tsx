@@ -1,25 +1,16 @@
-import React, { useState } from 'react';
-import { observer } from 'mobx-react-lite';
+import React from 'react';
 import {
   createStyles,
   makeStyles,
   Theme,
-  Container,
   Typography,
-  Button,
   Box,
-  AppBar,
-  Toolbar,
   Paper,
 } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
 import moment, { Moment } from 'moment';
-import { grey } from '@material-ui/core/colors';
 import { RoomTypeResult } from '../../../../core/models/room';
-import {
-  ReservationResponse,
-  ReservationStatusResponse,
-} from '../../../../core/models/reservation';
+import { ReservationStatusResponse } from '../../../../core/models/reservation';
 
 import IconButton from '@material-ui/core/IconButton';
 import ArrowIcon from '@material-ui/icons/ExpandLess';

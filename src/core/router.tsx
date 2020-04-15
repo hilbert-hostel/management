@@ -113,7 +113,7 @@ export const MainRoute = observer<MainRouteProps>(
         }
       };
       initStores();
-    }, [authStore, snackbarStore]);
+    }, [authStore, snackbarStore, history]);
 
     return (
       <Route path={path} {...rest}>

@@ -6,11 +6,9 @@ import {
   Theme,
   Container,
   Typography,
-  Button,
   Box,
   AppBar,
   Toolbar,
-  Paper,
 } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
 import { useStores } from '../../core/hooks/use-stores';
@@ -62,11 +60,11 @@ export const Customers: React.FC = observer(() => {
 
   return (
     <>
-      <AppBar position="static" color="default">
+      {/* <AppBar position="static" color="default">
         <Toolbar>
           <Typography variant="h4">Customers</Typography>
         </Toolbar>
-      </AppBar>
+      </AppBar> */}
       <Box
         className={classes.root}
         flexDirection="column"
@@ -86,7 +84,7 @@ export const Customers: React.FC = observer(() => {
               },
             ]}
             data={data}
-            title=" "
+            title="Customers"
             options={{
               selection: true,
               pageSize: 10,

@@ -10,6 +10,7 @@ import {
   ReservationPaymentStatusResponse,
 } from '../../models/reservation';
 import { User } from '../../models/user';
+import { CheckInOutResponse } from '../../models/checkinout';
 
 export let client: AxiosClient;
 
@@ -32,6 +33,10 @@ export class BackendAPI {
 
   static rooms() {
     return client.get<RoomTypeResult[]>('/admin/room');
+  }
+
+  static checkInOut() {
+    return client.get<CheckInOutResponse>('/admin/checkIn');
   }
 
   static reservations(params: { from: string; to: string }) {
