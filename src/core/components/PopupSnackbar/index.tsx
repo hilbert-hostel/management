@@ -35,7 +35,7 @@ export const PopupSnackbar: React.FC = observer(() => {
           {alert.message}
         </Alert>
       ) : (
-        <></>
+        <p>nothing to show</p>
       )}
     </Snackbar>
   );

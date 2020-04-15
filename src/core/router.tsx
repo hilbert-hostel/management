@@ -80,7 +80,6 @@ export const AppRouter: React.FC = () => {
             <Home />
           </MainRoute>
         </Switch>
-        <PopupSnackbar />
         {/* <Footer /> */}
       </div>
     </Router>
@@ -99,6 +98,7 @@ export const MainRoute = observer<MainRouteProps>(
             await authStore.init();
           }
         } catch (error) {
+          console.log(error);
           if (error.response) {
             switch (error.response.status) {
               case 401:
@@ -106,8 +106,24 @@ export const MainRoute = observer<MainRouteProps>(
                   message: 'You are not logged In',
                   type: 'error',
                 });
+                authStore.logout();
                 history.push('/login');
                 break;
+              case 403:
+                snackbarStore.sendMessage({
+                  message: 'You are not allowed to enter',
+                  type: 'error',
+                });
+                authStore.logout();
+                history.push('/login');
+                break;
+              case 500:
+                snackbarStore.sendMessage({
+                  message: 'Something went wrong',
+                  type: 'error',
+                });
+                authStore.logout();
+                history.push('/login');
             }
           }
         }

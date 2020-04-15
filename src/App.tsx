@@ -7,6 +7,7 @@ import { observer } from 'mobx-react-lite';
 import MomentUtils from '@date-io/moment';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import { useLocalStorage } from './core/hooks/use-localStorage';
+import { PopupSnackbar } from './core/components/PopupSnackbar';
 
 export const App: React.FC<AppProps> = observer(() => {
   const { themeStore, authStore } = useStores();
@@ -39,6 +40,7 @@ export const App: React.FC<AppProps> = observer(() => {
     <MuiPickersUtilsProvider utils={MomentUtils}>
       <ThemeProvider theme={themeStore.theme}>
         <AppRouter />
+        <PopupSnackbar />
       </ThemeProvider>
     </MuiPickersUtilsProvider>
   );

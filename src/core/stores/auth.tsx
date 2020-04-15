@@ -15,6 +15,7 @@ export function createAuthStore() {
         return user;
       } catch (error) {
         this.user = null;
+        throw error;
       }
     },
     setUser(user: User) {
@@ -30,16 +31,7 @@ export function createAuthStore() {
       new LocalStorage('token').clear();
     },
     async init() {
-      try {
-        await this.fetchUserData();
-      } catch (error) {
-        if (error.response) {
-          switch (error.response.status) {
-            case 401:
-              this.logout();
-          }
-        }
-      }
+      return await this.fetchUserData();
     },
     get isAuthenticated() {
       return !!this.token;
