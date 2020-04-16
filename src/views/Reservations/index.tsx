@@ -64,7 +64,7 @@ export const Reservations: React.FC = observer(() => {
       from: date.format('YYYY-MM-DD'),
       to: date
         .clone()
-        .add(7, 'days')
+        .add(6, 'days')
         .format('YYYY-MM-DD'),
     }).then(({ data }) => {
       setLoading(false);

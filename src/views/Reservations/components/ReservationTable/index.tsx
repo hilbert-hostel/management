@@ -94,12 +94,14 @@ export const ReservationTable: React.FC<ReservationTableProps> = ({
         : moment(reservation.checkIn).diff(startWeek, 'days') + 1;
     const end =
       moment(reservation.checkOut).diff(startWeek, 'days') > 7
-        ? 7
+        ? 8
         : moment(reservation.checkOut).diff(startWeek, 'days') + 1;
-    return {
-      gridColumnStart: start,
-      gridColumnEnd: end,
-    };
+    return start !== end
+      ? {
+          gridColumnStart: start,
+          gridColumnEnd: end,
+        }
+      : { display: 'none' };
   };
 
   return (
@@ -247,12 +249,12 @@ export const ReservationTable: React.FC<ReservationTableProps> = ({
                                       moment(reservation.checkIn).isBefore(
                                         startWeek
                                       )
-                                        ? moment(reservation.checkIn).isAfter(
+                                        ? moment(reservation.checkOut).isAfter(
                                             startWeek.clone().endOf('isoWeek')
                                           )
                                           ? classes.noSlope
                                           : classes.noLeft
-                                        : moment(reservation.checkIn).isAfter(
+                                        : moment(reservation.checkOut).isAfter(
                                             startWeek.clone().endOf('isoWeek')
                                           )
                                         ? classes.noRight
