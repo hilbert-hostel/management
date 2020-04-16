@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   createStyles,
   makeStyles,
@@ -16,6 +16,8 @@ import IconButton from '@material-ui/core/IconButton';
 import ArrowIcon from '@material-ui/icons/ExpandLess';
 import TodayIcon from '@material-ui/icons/Today';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import { number } from 'yup';
+import { client } from '../../../../core/repository/api/backend';
 
 const MAX_DATES = 7;
 
@@ -59,6 +61,7 @@ const useStyles = makeStyles((theme: Theme) =>
       justifyContent: 'center',
       alignItems: 'center',
       backgroundColor: theme.palette.primary.light,
+      overflow: 'show',
       color: theme.palette.primary.contrastText,
       clipPath: 'polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%)',
     },
@@ -82,6 +85,7 @@ export const ReservationTable: React.FC<ReservationTableProps> = ({
   reservations,
   rooms,
   onChangeDate,
+  onSelectReservation,
   isLoading = false,
 }) => {
   const classes = useStyles();
@@ -179,6 +183,7 @@ export const ReservationTable: React.FC<ReservationTableProps> = ({
                 .map((_, i) => {
                   return (
                     <div
+                      key={'day-' + i}
                       className={classes.dates}
                       style={{
                         gridRowStart: 1,
@@ -198,7 +203,7 @@ export const ReservationTable: React.FC<ReservationTableProps> = ({
                 })}
               {rooms.map((room, i) => {
                 return (
-                  <>
+                  <React.Fragment key={'room-type-' + room.type}>
                     <div
                       className={classes.box}
                       style={{
@@ -210,7 +215,7 @@ export const ReservationTable: React.FC<ReservationTableProps> = ({
                     </div>
                     {room.rooms.map((room, i) => {
                       return (
-                        <>
+                        <React.Fragment key={'room-' + room.id}>
                           <div
                             className={classes.box}
                             style={{
@@ -222,6 +227,7 @@ export const ReservationTable: React.FC<ReservationTableProps> = ({
                             </Typography>
                           </div>
                           <div
+                            key={'room-' + room.id + '-reservations'}
                             className={classes.reservations}
                             style={{
                               gridColumn: '2 / 9',
@@ -240,45 +246,26 @@ export const ReservationTable: React.FC<ReservationTableProps> = ({
                               .map(reservation => {
                                 return (
                                   <div
+                                    key={'reservation-' + reservation.id}
                                     style={getCoordinate(reservation)}
                                     className={``}
-                                  >
-                                    <div
-                                      className={`${classes.reservationBlock} 
-                                    ${
-                                      moment(reservation.checkIn).isBefore(
-                                        startWeek
-                                      )
-                                        ? moment(reservation.checkOut).isAfter(
-                                            startWeek.clone().endOf('isoWeek')
-                                          )
-                                          ? classes.noSlope
-                                          : classes.noLeft
-                                        : moment(reservation.checkOut).isAfter(
-                                            startWeek.clone().endOf('isoWeek')
-                                          )
-                                        ? classes.noRight
-                                        : ''
+                                    onClick={() =>
+                                      onSelectReservation &&
+                                      onSelectReservation(reservation)
                                     }
-                                   
-                                    `}
-                                    >
-                                      <Typography
-                                        variant="body2"
-                                        align="center"
-                                      >
-                                        {reservation.guest.firstname}{' '}
-                                        {reservation.guest.lastname[0]}.
-                                      </Typography>
-                                    </div>
+                                  >
+                                    <HoverInfo
+                                      reservation={reservation}
+                                      startWeek={startWeek}
+                                    />
                                   </div>
                                 );
                               })}
                           </div>
-                        </>
+                        </React.Fragment>
                       );
                     })}
-                  </>
+                  </React.Fragment>
                 );
               })}
             </div>
@@ -289,10 +276,98 @@ export const ReservationTable: React.FC<ReservationTableProps> = ({
   );
 };
 
+export const HoverInfo: React.FC<{
+  reservation: ReservationStatusResponse;
+  startWeek: Moment;
+}> = ({ reservation, startWeek }) => {
+  const classes = useStyles();
+  const [show, setShow] = useState<boolean>(false);
+  const [coordinate, setCoordinates] = useState<{ x: number; y: number }>();
+  const [timer, setTimer] = useState<NodeJS.Timeout>();
+
+  return (
+    <div
+      onMouseEnter={event => {
+        event.persist();
+        setTimer(
+          setTimeout(() => {
+            setShow(true);
+            setCoordinates({
+              x:
+                window.innerWidth - event.clientX < 300
+                  ? event.clientX - 300
+                  : event.clientX,
+              y:
+                window.innerHeight - event.clientY < 125
+                  ? event.clientY - 125
+                  : event.clientY,
+            });
+          }, 500)
+        );
+      }}
+      onMouseLeave={() => {
+        if (timer) clearTimeout(timer);
+        setShow(false);
+      }}
+    >
+      <div
+        className={`${classes.reservationBlock} 
+        ${
+          moment(reservation.checkIn).isBefore(startWeek)
+            ? moment(reservation.checkOut).isAfter(
+                startWeek.clone().endOf('isoWeek')
+              )
+              ? classes.noSlope
+              : classes.noLeft
+            : moment(reservation.checkOut).isAfter(
+                startWeek.clone().endOf('isoWeek')
+              )
+            ? classes.noRight
+            : ''
+        }`}
+      >
+        <Typography variant="body2" align="center">
+          {reservation.guest.firstname} {reservation.guest.lastname[0]}.
+        </Typography>
+      </div>
+      {show && (
+        <Box
+          position="fixed"
+          top={coordinate?.y}
+          left={coordinate?.x}
+          maxWidth="300px"
+          zIndex="999"
+        >
+          <Paper>
+            <Box padding={1}>
+              <Typography variant="h6">
+                Reservation: {reservation.id}
+              </Typography>
+              <Typography variant="body2">
+                Reserver: {reservation.guest.firstname}{' '}
+                {reservation.guest.lastname} ({reservation.guest.email})
+              </Typography>
+              <Typography variant="body2">
+                Rooms : {reservation.rooms.map(e => 'Room ' + e.id).join(', ')}
+              </Typography>
+              <Typography variant="body2">
+                Special Requests : {reservation.specialRequests || '-'}
+              </Typography>
+              <Typography variant="body2">
+                Payment : {reservation.isPaid ? 'Paid' : 'Not Paid'}
+              </Typography>
+            </Box>
+          </Paper>
+        </Box>
+      )}
+    </div>
+  );
+};
 export interface ReservationTableProps {
   date: Moment;
   rooms: RoomTypeResult[];
   reservations: ReservationStatusResponse[];
   onChangeDate?: (date: Moment) => void;
+  onSelectReservation?: (reservation: ReservationStatusResponse) => void;
   isLoading: boolean;
 }

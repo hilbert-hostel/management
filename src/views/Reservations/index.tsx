@@ -99,6 +99,7 @@ export const Reservations: React.FC = observer(() => {
                   setReservations([]);
                   setDate(newDate);
                 }}
+                onSelectReservation={console.log}
               />
             )}
           </div>
