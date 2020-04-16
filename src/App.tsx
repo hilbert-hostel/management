@@ -8,6 +8,7 @@ import MomentUtils from '@date-io/moment';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import { useLocalStorage } from './core/hooks/use-localStorage';
 import { PopupSnackbar } from './core/components/PopupSnackbar';
+import { ErrorBoundary } from './core/error/ErrorBoundary';
 
 export const App: React.FC<AppProps> = observer(() => {
   const { themeStore, authStore } = useStores();
@@ -39,8 +40,10 @@ export const App: React.FC<AppProps> = observer(() => {
   return (
     <MuiPickersUtilsProvider utils={MomentUtils}>
       <ThemeProvider theme={themeStore.theme}>
-        <AppRouter />
-        <PopupSnackbar />
+        <ErrorBoundary>
+          <AppRouter />
+          <PopupSnackbar />
+        </ErrorBoundary>
       </ThemeProvider>
     </MuiPickersUtilsProvider>
   );
