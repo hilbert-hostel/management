@@ -20,7 +20,7 @@ export class ErrorBoundary extends React.Component<{}> {
           from: 'management',
           error: error.name,
           stack: error.stack,
-          timemstamp: Date.now,
+          timestamp: Date.now,
         }).then(() => {
           console.log('logged');
         });

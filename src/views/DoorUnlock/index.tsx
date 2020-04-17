@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import {
   createStyles,
@@ -11,6 +11,9 @@ import {
 } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
 import { useStores } from '../../core/hooks/use-stores';
+import { BackendAPI } from '../../core/repository/api/backend';
+import MaterialTable from 'material-table';
+import { Room } from '../../core/models/room';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -40,6 +43,26 @@ export const DoorUnlock: React.FC = observer(() => {
   const classes = useStyles();
   const history = useHistory();
   const { authStore } = useStores();
+  const [rooms, setRooms] = useState<Room[]>([]);
+
+  useEffect(() => {
+    BackendAPI.rooms().then(res => {
+      const { data } = res;
+      const rooms = data
+        .map(roomType => {
+          return roomType.rooms.map(e => ({
+            ...e,
+            type: roomType.type,
+            price: roomType.price,
+          }));
+        })
+        .reduce((p, c) => {
+          return [...p, ...c];
+        }, [] as any[]);
+      setRooms(rooms);
+      console.log(rooms);
+    });
+  }, []);
   return (
     <Box
       className={classes.root}
@@ -48,7 +71,20 @@ export const DoorUnlock: React.FC = observer(() => {
       display="flex"
     >
       <Container maxWidth="lg" className={classes.content}>
-        <Typography variant="h4">Door Unlock</Typography>
+        <MaterialTable
+          columns={[
+            { title: 'Room', render: row => <>Room {row.id}</> },
+            { title: 'Type', field: 'type' },
+            { title: 'Beds', field: 'beds.length' },
+            { title: 'Price', field: 'price' },
+          ]}
+          data={rooms}
+          title="Door Unlock"
+          options={{
+            // selection: true,
+            pageSize: 10,
+          }}
+        />
       </Container>
     </Box>
   );

@@ -92,7 +92,6 @@ export const CheckInOut: React.FC = observer(() => {
               },
             }}
             columns={[
-              { title: 'Room', field: 'fullname' },
               { title: 'Guest', field: 'guest.firstname' },
               { title: 'Nights', field: 'nights' },
               {
@@ -131,7 +130,6 @@ export const CheckInOut: React.FC = observer(() => {
               },
             }}
             columns={[
-              { title: 'Room', field: 'fullname' },
               { title: 'Guest', field: 'guest.firstname' },
               { title: 'Nights', field: 'nights' },
               {

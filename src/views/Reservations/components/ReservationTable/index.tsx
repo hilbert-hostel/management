@@ -247,8 +247,10 @@ export const ReservationTable: React.FC<ReservationTableProps> = ({
                                 return (
                                   <div
                                     key={'reservation-' + reservation.id}
-                                    style={getCoordinate(reservation)}
-                                    className={``}
+                                    style={{
+                                      ...getCoordinate(reservation),
+                                      padding: '2.5px',
+                                    }}
                                     onClick={() =>
                                       onSelectReservation &&
                                       onSelectReservation(reservation)
