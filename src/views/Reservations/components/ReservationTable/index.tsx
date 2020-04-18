@@ -18,6 +18,7 @@ import TodayIcon from '@material-ui/icons/Today';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { number } from 'yup';
 import { client } from '../../../../core/repository/api/backend';
+import { Maintenance } from '../../../../core/models/maintenance';
 
 const MAX_DATES = 7;
 
@@ -369,6 +370,7 @@ export interface ReservationTableProps {
   date: Moment;
   rooms: RoomTypeResult[];
   reservations: ReservationStatusResponse[];
+  maintenances: Maintenance[];
   onChangeDate?: (date: Moment) => void;
   onSelectReservation?: (reservation: ReservationStatusResponse) => void;
   isLoading: boolean;

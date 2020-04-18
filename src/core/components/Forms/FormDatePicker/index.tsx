@@ -7,9 +7,9 @@ import { createStyles, makeStyles, Theme } from '@material-ui/core';
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     formItem: {
-      marginBottom: theme.spacing(2),
-      paddingLeft: theme.spacing(1),
-      paddingRight: theme.spacing(1),
+      // marginBottom: theme.spacing(2),
+      // paddingLeft: theme.spacing(1),
+      // paddingRight: theme.spacing(1),
     },
   })
 );

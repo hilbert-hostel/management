@@ -8,12 +8,18 @@ import {
   Typography,
   Button,
   Box,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
 } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
 import { useStores } from '../../core/hooks/use-stores';
 import { BackendAPI } from '../../core/repository/api/backend';
 import MaterialTable from 'material-table';
 import { Room } from '../../core/models/room';
+import { handleServerError } from '../../core/utils/handleServerError';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -42,8 +48,9 @@ const useStyles = makeStyles((theme: Theme) =>
 export const DoorUnlock: React.FC = observer(() => {
   const classes = useStyles();
   const history = useHistory();
-  const { authStore } = useStores();
+  const { authStore, snackbarStore } = useStores();
   const [rooms, setRooms] = useState<Room[]>([]);
+  const [selectedRoom, setSelectedRoom] = useState<Room>();
 
   useEffect(() => {
     BackendAPI.rooms().then(res => {
@@ -63,29 +70,77 @@ export const DoorUnlock: React.FC = observer(() => {
       console.log(rooms);
     });
   }, []);
+
+  const unlock = async (roomID: number) => {
+    try {
+      await BackendAPI.openDoor(roomID);
+    } catch (error) {
+      handleServerError(error, snackbarStore);
+    }
+  };
+
   return (
-    <Box
-      className={classes.root}
-      flexDirection="column"
-      justifyContent="center"
-      display="flex"
-    >
-      <Container maxWidth="lg" className={classes.content}>
-        <MaterialTable
-          columns={[
-            { title: 'Room', render: row => <>Room {row.id}</> },
-            { title: 'Type', field: 'type' },
-            { title: 'Beds', field: 'beds.length' },
-            { title: 'Price', field: 'price' },
-          ]}
-          data={rooms}
-          title="Door Unlock"
-          options={{
-            // selection: true,
-            pageSize: 10,
-          }}
-        />
-      </Container>
-    </Box>
+    <>
+      <Box
+        className={classes.root}
+        flexDirection="column"
+        justifyContent="center"
+        display="flex"
+      >
+        <Container maxWidth="lg" className={classes.content}>
+          <MaterialTable
+            columns={[
+              { title: 'Room', render: row => <>Room {row.id}</> },
+              { title: 'Type', field: 'type' },
+              { title: 'Beds', field: 'beds.length' },
+              { title: 'Price', field: 'price' },
+              {
+                render: row => (
+                  <Button color="primary" onClick={() => setSelectedRoom(row)}>
+                    Unlock Door
+                  </Button>
+                ),
+              },
+            ]}
+            data={rooms}
+            title="Door Unlock"
+            options={{
+              // selection: true,
+              pageSize: 10,
+            }}
+          />
+        </Container>
+      </Box>
+      <Dialog
+        open={!!selectedRoom}
+        onClose={() => setSelectedRoom(undefined)}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          Are you sure you want to unlock Room {selectedRoom?.id}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Make sure to stay close to the room before unlocking.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setSelectedRoom(undefined)} color="default">
+            Cancel
+          </Button>
+          <Button
+            onClick={() => {
+              selectedRoom && unlock(selectedRoom?.id);
+              setSelectedRoom(undefined);
+            }}
+            color="primary"
+            autoFocus
+          >
+            Unlock
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </>
   );
 });

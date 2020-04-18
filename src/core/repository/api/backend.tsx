@@ -11,6 +11,10 @@ import {
 } from '../../models/reservation';
 import { User } from '../../models/user';
 import { CheckInOutResponse } from '../../models/checkinout';
+import {
+  Maintenance,
+  CreateMaintenancePayload,
+} from '../../models/maintenance';
 
 export let client: AxiosClient;
 
@@ -49,11 +53,16 @@ export class BackendAPI {
     return client.get<User[]>('/admin/guest');
   }
 
-  static openDoor() {
-    return client.post('/door/lock', {});
+  static maintenances() {
+    return client.get<Maintenance[]>('/admin/maintenance');
   }
-  static closeDoor() {
-    return client.post('/door/unlock', {});
+
+  static addMaintenance(data: CreateMaintenancePayload) {
+    return client.post<Maintenance>('/admin/maintenance', data);
+  }
+
+  static openDoor(roomID: number) {
+    return client.post('/admin/unlock', { params: { roomID } });
   }
   static sound() {
     return client.post('/door/sound', {});
