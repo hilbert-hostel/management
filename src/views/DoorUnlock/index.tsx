@@ -77,7 +77,6 @@ export const DoorUnlock: React.FC = observer(() => {
           return [...p, ...c];
         }, [] as any[]);
       setRooms(rooms);
-      console.log(rooms);
     });
   }, []);
 

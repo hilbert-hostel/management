@@ -10,6 +10,11 @@ import {
   Box,
   AppBar,
   Toolbar,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
 } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
 import { useStores } from '../../core/hooks/use-stores';
@@ -64,7 +69,7 @@ export const Reservations: React.FC = observer(() => {
   const [maintenances, setMaintenances] = useState<Maintenance[]>([]);
   const [formOpen, setFormOpen] = useState<boolean>(false);
   const [rooms, setRooms] = useState<RoomTypeResult[]>([]);
-
+  const [toDelete, setToDelete] = useState<Maintenance>();
   const addMaintenance = async (values: CreateMaintenanceModel) => {
     try {
       await BackendAPI.addMaintenance({
@@ -85,14 +90,20 @@ export const Reservations: React.FC = observer(() => {
 
   const deleteMaintenance = async (maintenance: Maintenance) => {
     try {
-      await BackendAPI.deleteMaintenance(maintenance.id.toString());
-      snackbarStore.sendMessage({
-        message: 'Maintenance Deleted Successfully',
-        type: 'success',
-      });
-      updateMaintenance();
+      if (!isLoading) {
+        setLoading(true);
+        await BackendAPI.deleteMaintenance(maintenance.id.toString());
+        snackbarStore.sendMessage({
+          message: 'Maintenance Deleted Successfully',
+          type: 'success',
+        });
+        updateMaintenance();
+        setToDelete(undefined);
+        setLoading(false);
+      }
     } catch (error) {
       handleServerError(error, snackbarStore);
+      setLoading(false);
     }
   };
 
@@ -165,8 +176,8 @@ export const Reservations: React.FC = observer(() => {
                   setReservations([]);
                   setDate(newDate);
                 }}
-                onSelectReservation={console.log}
-                onDeleteMaintenance={deleteMaintenance}
+                // onSelectReservation={console.log}
+                onDeleteMaintenance={setToDelete}
               />
             )}
           </div>
@@ -194,6 +205,32 @@ export const Reservations: React.FC = observer(() => {
           handleSubmit={values => addMaintenance(values)}
         />
       )}
+      <Dialog
+        open={!!toDelete}
+        onClose={() => setToDelete(undefined)}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          Are you sure you want to delete this maintenance
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            This can't be undone.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setToDelete(undefined)} color="default">
+            Close
+          </Button>
+          <Button
+            onClick={() => toDelete && deleteMaintenance(toDelete)}
+            color="primary"
+          >
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 });

@@ -286,6 +286,7 @@ export const ReservationTable: React.FC<ReservationTableProps> = ({
                                     }
                                   >
                                     <ReservationHover
+                                      room={room}
                                       reservation={reservation}
                                       startWeek={startWeek}
                                     />
@@ -418,14 +419,14 @@ export const MaintenanceHover: React.FC<{
           </Box>
         </Paper>
       </div>
-      )}
     </div>
   );
 };
 export const ReservationHover: React.FC<{
   reservation: ReservationStatusResponse;
   startWeek: Moment;
-}> = ({ reservation, startWeek }) => {
+  room: { id: number; beds: { id: string }[] };
+}> = ({ reservation, startWeek, room }) => {
   const classes = useStyles();
   const [show, setShow] = useState<boolean>(false);
   const [coordinate, setCoordinates] = useState<{ x: number; y: number }>();
@@ -496,6 +497,10 @@ export const ReservationHover: React.FC<{
             <Typography variant="body2">
               Duration : {moment(reservation.checkIn).format('DD MMM YYYY')} -{' '}
               {moment(reservation.checkOut).format('DD MMM YYYY')}
+            </Typography>
+            <Typography variant="body2">
+              Beds :{' '}
+              {reservation.rooms.find(r => r.id === room.id)?.beds.length}
             </Typography>
             <Typography variant="body2">
               Reserver: {reservation.guest.firstname}{' '}

@@ -16,10 +16,11 @@ export interface ReservationResponse {
   specialRequests: string;
 }
 
-export type ReservationStatusResponse = Reservation & {
-  checkIn: string;
-  checkOut: string;
-};
+export type ReservationStatusResponse = {
+  checkIn: Date;
+  checkOut: Date;
+  rooms: { beds: { id: number; room_id: number }[] } & Reservation['rooms'];
+} & Reservation;
 
 export interface ReservationPaymentStatusResponse {
   isPaid: boolean;
@@ -35,7 +36,7 @@ export interface Reservation {
     description: string;
     type: string;
     guests: number;
-    beds: number;
+    beds: { id: number; room_id: number }[];
     photos: RoomPhoto[];
   }[];
   specialRequests: string;
