@@ -105,11 +105,11 @@ const schema = Yup.object<CreateMaintenanceModel>({
         .subtract(1, 'day')
         .set({ hours: 23, minutes: 59, seconds: 59 })
         .toDate(),
-      "Check In date can't be in the past"
+      "Maintenance start date can't be in the past"
     ),
   to: Yup.date()
     .required()
-    .min(Yup.ref('checkIn'), "Check Out date can't be before check in date"),
+    .min(Yup.ref('from'), "Maintenance end date can't be before check in date"),
   description: Yup.string(),
 });
 
@@ -165,7 +165,7 @@ export const NewMaintenanceDialog: React.FC<{
           label="To"
           name="to"
           value={form.values.to}
-          minDate={form.values.to}
+          minDate={form.values.from}
           errorText={form.errors && (form.errors.to as string)}
           format="Do MMMM YYYY"
           onChange={date => form.setFieldValue('to', date?.toDate())}

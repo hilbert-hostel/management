@@ -19,7 +19,10 @@ import moment from 'moment';
 import { ReservationStatusResponse } from '../../core/models/reservation';
 import { RoomTypeResult } from '../../core/models/room';
 import { NewMaintenanceDialog } from './components/NewMaintenanceDialog';
-import { CreateMaintenanceModel } from '../../core/models/maintenance';
+import {
+  CreateMaintenanceModel,
+  Maintenance,
+} from '../../core/models/maintenance';
 import { handleServerError } from '../../core/utils/handleServerError';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -58,6 +61,7 @@ export const Reservations: React.FC = observer(() => {
   const [reservations, setReservations] = useState<ReservationStatusResponse[]>(
     []
   );
+  const [maintenances, setMaintenances] = useState<Maintenance[]>([]);
   const [formOpen, setFormOpen] = useState<boolean>(false);
   const [rooms, setRooms] = useState<RoomTypeResult[]>([]);
 
@@ -68,6 +72,11 @@ export const Reservations: React.FC = observer(() => {
         from: moment(values.from).format('YYYY-MM-DD'),
         to: moment(values.to).format('YYYY-MM-DD'),
       });
+      snackbarStore.sendMessage({
+        message: 'Maintenance created',
+        type: 'success',
+      });
+      setFormOpen(false);
     } catch (error) {
       handleServerError(error, snackbarStore);
     }
@@ -85,7 +94,13 @@ export const Reservations: React.FC = observer(() => {
       setLoading(false);
       setReservations(data);
     });
-    BackendAPI.maintenances().then(console.log);
+    BackendAPI.maintenances({
+      from: date.format('YYYY-MM-DD'),
+      to: date
+        .clone()
+        .add(6, 'days')
+        .format('YYYY-MM-DD'),
+    }).then(({ data }) => setMaintenances(data));
   }, [date]);
   return (
     <>
@@ -114,7 +129,7 @@ export const Reservations: React.FC = observer(() => {
                 date={date}
                 reservations={reservations}
                 rooms={rooms}
-                maintenances={[]}
+                maintenances={maintenances}
                 isLoading={isLoading}
                 onChangeDate={newDate => {
                   setReservations([]);

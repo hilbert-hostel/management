@@ -65,6 +65,24 @@ const useStyles = makeStyles((theme: Theme) =>
       overflow: 'show',
       color: theme.palette.primary.contrastText,
       clipPath: 'polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%)',
+      transition: 'background-color .5s ease',
+      '&:hover': {
+        backgroundColor: theme.palette.primary.dark,
+      },
+    },
+    maintenanceBlock: {
+      padding: theme.spacing(0.5),
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      backgroundColor: theme.palette.secondary.light,
+      overflow: 'show',
+      color: theme.palette.primary.contrastText,
+      clipPath: 'polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%)',
+      transition: 'background-color .5s ease',
+      '&:hover': {
+        backgroundColor: theme.palette.secondary.dark,
+      },
     },
     reservations: {
       // padding: '5px',
@@ -85,6 +103,7 @@ export const ReservationTable: React.FC<ReservationTableProps> = ({
   date: startWeek,
   reservations,
   rooms,
+  maintenances,
   onChangeDate,
   onSelectReservation,
   isLoading = false,
@@ -92,15 +111,15 @@ export const ReservationTable: React.FC<ReservationTableProps> = ({
   const classes = useStyles();
   const history = useHistory();
 
-  const getCoordinate = (reservation: any) => {
+  const getCoordinate = (from: Date, to: Date) => {
     const start =
-      moment(reservation.checkIn).diff(startWeek, 'days') < 0
+      moment(from).diff(startWeek, 'days') < 0
         ? 1
-        : moment(reservation.checkIn).diff(startWeek, 'days') + 1;
+        : moment(from).diff(startWeek, 'days') + 1;
     const end =
-      moment(reservation.checkOut).diff(startWeek, 'days') > 7
+      moment(to).diff(startWeek, 'days') > 7
         ? 8
-        : moment(reservation.checkOut).diff(startWeek, 'days') + 1;
+        : moment(to).diff(startWeek, 'days') + 1;
     return start !== end
       ? {
           gridColumnStart: start,
@@ -249,7 +268,10 @@ export const ReservationTable: React.FC<ReservationTableProps> = ({
                                   <div
                                     key={'reservation-' + reservation.id}
                                     style={{
-                                      ...getCoordinate(reservation),
+                                      ...getCoordinate(
+                                        reservation.checkIn,
+                                        reservation.checkOut
+                                      ),
                                       padding: '2.5px',
                                     }}
                                     onClick={() =>
@@ -257,8 +279,29 @@ export const ReservationTable: React.FC<ReservationTableProps> = ({
                                       onSelectReservation(reservation)
                                     }
                                   >
-                                    <HoverInfo
+                                    <ReservationHover
                                       reservation={reservation}
+                                      startWeek={startWeek}
+                                    />
+                                  </div>
+                                );
+                              })}
+                            {maintenances
+                              .filter(e => room.id === e.roomID)
+                              .map(maintenance => {
+                                return (
+                                  <div
+                                    key={'maintenance-' + maintenance.id}
+                                    style={{
+                                      ...getCoordinate(
+                                        maintenance.from,
+                                        maintenance.to
+                                      ),
+                                      padding: '2.5px',
+                                    }}
+                                  >
+                                    <MaintenanceHover
+                                      maintenance={maintenance}
                                       startWeek={startWeek}
                                     />
                                   </div>
@@ -278,8 +321,86 @@ export const ReservationTable: React.FC<ReservationTableProps> = ({
     </>
   );
 };
+export const MaintenanceHover: React.FC<{
+  maintenance: Maintenance;
+  startWeek: Moment;
+}> = ({ maintenance, startWeek }) => {
+  const classes = useStyles();
+  const [show, setShow] = useState<boolean>(false);
+  const [coordinate, setCoordinates] = useState<{ x: number; y: number }>();
+  const [timer, setTimer] = useState<NodeJS.Timeout>();
 
-export const HoverInfo: React.FC<{
+  return (
+    <div
+      onMouseEnter={event => {
+        event.persist();
+        setTimer(
+          setTimeout(() => {
+            setShow(true);
+            setCoordinates({
+              x:
+                window.innerWidth - event.clientX < 300
+                  ? event.clientX - 300
+                  : event.clientX,
+              y:
+                window.innerHeight - event.clientY < 125
+                  ? event.clientY - 125
+                  : event.clientY,
+            });
+          }, 500)
+        );
+      }}
+      onMouseLeave={() => {
+        if (timer) clearTimeout(timer);
+        setShow(false);
+      }}
+    >
+      <div
+        className={`${classes.maintenanceBlock} 
+        ${
+          moment(maintenance.from).isBefore(startWeek)
+            ? moment(maintenance.to).isAfter(startWeek.clone().endOf('isoWeek'))
+              ? classes.noSlope
+              : classes.noLeft
+            : moment(maintenance.to).isAfter(startWeek.clone().endOf('isoWeek'))
+            ? classes.noRight
+            : ''
+        }`}
+      >
+        <Typography variant="body2" align="center">
+          Maintenance
+        </Typography>
+      </div>
+      {show && (
+        <Box
+          position="fixed"
+          top={coordinate?.y}
+          left={coordinate?.x}
+          maxWidth="300px"
+          zIndex="999"
+        >
+          <Paper>
+            <Box padding={1}>
+              <Typography variant="h6">
+                Maintenance: {maintenance.id}
+              </Typography>
+              <Typography variant="body2">
+                From : {moment(maintenance.from).format('DD MMM YYYY')}
+              </Typography>
+              <Typography variant="body2">
+                To : {moment(maintenance.to).format('DD MMM YYYY')}
+              </Typography>
+              <Typography variant="body2">
+                Description : {maintenance.description}
+              </Typography>
+            </Box>
+          </Paper>
+        </Box>
+      )}
+    </div>
+  );
+};
+export const ReservationHover: React.FC<{
   reservation: ReservationStatusResponse;
   startWeek: Moment;
 }> = ({ reservation, startWeek }) => {
@@ -345,6 +466,10 @@ export const HoverInfo: React.FC<{
             <Box padding={1}>
               <Typography variant="h6">
                 Reservation: {reservation.id}
+              </Typography>
+              <Typography variant="body2">
+                Duration : {moment(reservation.checkIn).format('DD MMM YYYY')} -{' '}
+                {moment(reservation.checkOut).format('DD MMM YYYY')}
               </Typography>
               <Typography variant="body2">
                 Reserver: {reservation.guest.firstname}{' '}

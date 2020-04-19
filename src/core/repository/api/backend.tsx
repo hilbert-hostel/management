@@ -53,8 +53,8 @@ export class BackendAPI {
     return client.get<User[]>('/admin/guest');
   }
 
-  static maintenances() {
-    return client.get<Maintenance[]>('/admin/maintenance');
+  static maintenances(params: { from: string; to: string }) {
+    return client.get<Maintenance[]>('/admin/maintenance', { params });
   }
 
   static addMaintenance(data: CreateMaintenancePayload) {
