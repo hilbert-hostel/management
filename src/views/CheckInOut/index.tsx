@@ -7,6 +7,7 @@ import {
   Container,
   Typography,
   Box,
+  Avatar,
 } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
 import { useStores } from '../../core/hooks/use-stores';
@@ -15,6 +16,7 @@ import { CheckInEntry, CheckOutEntry } from '../../core/models/checkinout';
 import { BackendAPI } from '../../core/repository/api/backend';
 import moment from 'moment';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import { orange } from '@material-ui/core/colors';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -92,7 +94,29 @@ export const CheckInOut: React.FC = observer(() => {
               },
             }}
             columns={[
-              { title: 'Guest', field: 'guest.firstname' },
+              {
+                title: 'Guest',
+                field: 'guest.firstname',
+                render: row => {
+                  return (
+                    <Box
+                      display="flex"
+                      justifyContent="flex-start"
+                      alignItems="center"
+                    >
+                      <Avatar
+                        style={{
+                          backgroundColor: orange[300],
+                          marginRight: '8px',
+                        }}
+                      >
+                        {row.guest.firstname.toUpperCase()[0]}
+                      </Avatar>
+                      {row.guest.firstname}
+                    </Box>
+                  );
+                },
+              },
               { title: 'Nights', field: 'nights' },
               {
                 title: 'Check In Time',
@@ -105,7 +129,7 @@ export const CheckInOut: React.FC = observer(() => {
             data={checkIn}
             title="Check In"
             options={{
-              selection: true,
+              // selection: true,
               pageSize: 6,
             }}
           />
@@ -130,7 +154,29 @@ export const CheckInOut: React.FC = observer(() => {
               },
             }}
             columns={[
-              { title: 'Guest', field: 'guest.firstname' },
+              {
+                title: 'Guest',
+                field: 'guest.firstname',
+                render: row => {
+                  return (
+                    <Box
+                      display="flex"
+                      justifyContent="flex-start"
+                      alignItems="center"
+                    >
+                      <Avatar
+                        style={{
+                          backgroundColor: orange[300],
+                          marginRight: '8px',
+                        }}
+                      >
+                        {row.guest.firstname.toUpperCase()[0]}
+                      </Avatar>
+                      {row.guest.firstname}
+                    </Box>
+                  );
+                },
+              },
               { title: 'Nights', field: 'nights' },
               {
                 title: 'Check Out Time',
@@ -144,7 +190,7 @@ export const CheckInOut: React.FC = observer(() => {
             data={checkOut}
             title="Check Out"
             options={{
-              selection: true,
+              // selection: true,
               pageSize: 6,
             }}
           />

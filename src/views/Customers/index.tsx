@@ -9,11 +9,13 @@ import {
   Box,
   AppBar,
   Toolbar,
+  Avatar,
 } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
 import { useStores } from '../../core/hooks/use-stores';
 import MaterialTable from 'material-table';
 import { BackendAPI } from '../../core/repository/api/backend';
+import { orange } from '@material-ui/core/colors';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -74,7 +76,29 @@ export const Customers: React.FC = observer(() => {
         <Container maxWidth="lg" className={classes.content}>
           <MaterialTable
             columns={[
-              { title: 'Fullname', field: 'fullname' },
+              {
+                title: 'Fullname',
+                field: 'fullname',
+                render: row => {
+                  return (
+                    <Box
+                      display="flex"
+                      justifyContent="flex-start"
+                      alignItems="center"
+                    >
+                      <Avatar
+                        style={{
+                          backgroundColor: orange[300],
+                          marginRight: '8px',
+                        }}
+                      >
+                        {row.fullname.toUpperCase()[0]}
+                      </Avatar>
+                      {row.fullname}
+                    </Box>
+                  );
+                },
+              },
               { title: 'Email', field: 'email' },
               { title: 'Address', field: 'address' },
               { title: 'Phone', field: 'phone' },
