@@ -10,7 +10,6 @@ import {
 import { Login } from '../views/Login';
 import { makeStyles, Theme, createStyles, Box } from '@material-ui/core';
 import { Home } from '../views/Home';
-import { PopupSnackbar } from './components/PopupSnackbar';
 import { observer } from 'mobx-react-lite';
 import { useStores } from './hooks/use-stores';
 import { PermanentDrawer } from './components/Drawer';

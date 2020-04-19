@@ -77,10 +77,40 @@ export const Reservations: React.FC = observer(() => {
         type: 'success',
       });
       setFormOpen(false);
+      updateMaintenance();
     } catch (error) {
       handleServerError(error, snackbarStore);
     }
   };
+
+  const deleteMaintenance = async (maintenance: Maintenance) => {
+    try {
+      await BackendAPI.deleteMaintenance(maintenance.id.toString());
+      snackbarStore.sendMessage({
+        message: 'Maintenance Deleted Successfully',
+        type: 'success',
+      });
+      updateMaintenance();
+    } catch (error) {
+      handleServerError(error, snackbarStore);
+    }
+  };
+
+  const updateMaintenance = async () => {
+    try {
+      const { data } = await BackendAPI.maintenances({
+        from: date.format('YYYY-MM-DD'),
+        to: date
+          .clone()
+          .add(6, 'days')
+          .format('YYYY-MM-DD'),
+      });
+      setMaintenances(data);
+    } catch (error) {
+      handleServerError(error, snackbarStore);
+    }
+  };
+
   useEffect(() => {
     setLoading(true);
     BackendAPI.rooms().then(({ data }) => setRooms(data));
@@ -136,6 +166,7 @@ export const Reservations: React.FC = observer(() => {
                   setDate(newDate);
                 }}
                 onSelectReservation={console.log}
+                onDeleteMaintenance={deleteMaintenance}
               />
             )}
           </div>

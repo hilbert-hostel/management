@@ -61,8 +61,16 @@ export class BackendAPI {
     return client.post<Maintenance>('/admin/maintenance', data);
   }
 
+  static deleteMaintenance(id: string) {
+    return client.delete('/admin/maintenance', id);
+  }
+
   static openDoor(roomID: number) {
     return client.post('/admin/unlock', { params: { roomID } });
+  }
+
+  static generateMasterKey() {
+    return client.get<{ code: string }>('/admin/generate');
   }
   static sound() {
     return client.post('/door/sound', {});

@@ -13,12 +13,14 @@ import {
   DialogContent,
   DialogContentText,
   DialogActions,
+  CircularProgress,
 } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
 import { useStores } from '../../core/hooks/use-stores';
 import { BackendAPI } from '../../core/repository/api/backend';
 import MaterialTable from 'material-table';
 import { Room } from '../../core/models/room';
+import qrcode from 'qrcode';
 import { handleServerError } from '../../core/utils/handleServerError';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -42,15 +44,23 @@ const useStyles = makeStyles((theme: Theme) =>
       paddingTop: theme.spacing(3),
       height: '100%',
     },
+    image: {
+      height: 'auto',
+      margin: '0 auto',
+      display: 'block',
+      marginBottom: theme.spacing(3),
+    },
   })
 );
 
 export const DoorUnlock: React.FC = observer(() => {
   const classes = useStyles();
   const history = useHistory();
-  const { authStore, snackbarStore } = useStores();
+  const { themeStore, snackbarStore } = useStores();
   const [rooms, setRooms] = useState<Room[]>([]);
   const [selectedRoom, setSelectedRoom] = useState<Room>();
+  const [masterKey, setMasterKey] = useState<boolean>(false);
+  const [qr, setQR] = useState<string>();
 
   useEffect(() => {
     BackendAPI.rooms().then(res => {
@@ -71,6 +81,27 @@ export const DoorUnlock: React.FC = observer(() => {
     });
   }, []);
 
+  useEffect(() => {
+    if (masterKey) {
+      BackendAPI.generateMasterKey().then(async res => {
+        setQR(
+          await qrcode.toDataURL(res.data.code, {
+            errorCorrectionLevel: 'M',
+            color: themeStore.dark
+              ? {
+                  dark: '#FFF',
+                  light: '#0000',
+                }
+              : {
+                  dark: '#000',
+                  light: '#0000',
+                },
+          })
+        );
+      });
+    }
+  }, [masterKey, themeStore]);
+
   const unlock = async (roomID: number) => {
     try {
       await BackendAPI.openDoor(roomID);
@@ -88,6 +119,11 @@ export const DoorUnlock: React.FC = observer(() => {
         display="flex"
       >
         <Container maxWidth="lg" className={classes.content}>
+          <Box paddingBottom={1}>
+            <Button onClick={() => setMasterKey(true)}>
+              Generate Master key
+            </Button>
+          </Box>
           <MaterialTable
             columns={[
               { title: 'Room', render: row => <>Room {row.id}</> },
@@ -111,6 +147,29 @@ export const DoorUnlock: React.FC = observer(() => {
           />
         </Container>
       </Box>
+      <Dialog
+        open={!!masterKey}
+        onClose={() => setMasterKey(false)}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">Masterkey</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            QR is valid for 5 minute
+          </DialogContentText>
+          {qr ? (
+            <img src={qr} className={classes.image} alt="qrcode" />
+          ) : (
+            <CircularProgress className={classes.image} />
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setMasterKey(false)} color="default">
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
       <Dialog
         open={!!selectedRoom}
         onClose={() => setSelectedRoom(undefined)}

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   createStyles,
   makeStyles,
@@ -6,6 +6,7 @@ import {
   Typography,
   Box,
   Paper,
+  Button,
 } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
 import moment, { Moment } from 'moment';
@@ -17,8 +18,12 @@ import ArrowIcon from '@material-ui/icons/ExpandLess';
 import TodayIcon from '@material-ui/icons/Today';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { number } from 'yup';
-import { client } from '../../../../core/repository/api/backend';
+import { client, BackendAPI } from '../../../../core/repository/api/backend';
 import { Maintenance } from '../../../../core/models/maintenance';
+import { observer } from 'mobx-react-lite';
+import { handleServerError } from '../../../../core/utils/handleServerError';
+import { useStores } from '../../../../core/hooks/use-stores';
+import { red } from '@material-ui/core/colors';
 
 const MAX_DATES = 7;
 
@@ -106,6 +111,7 @@ export const ReservationTable: React.FC<ReservationTableProps> = ({
   maintenances,
   onChangeDate,
   onSelectReservation,
+  onDeleteMaintenance,
   isLoading = false,
 }) => {
   const classes = useStyles();
@@ -303,6 +309,10 @@ export const ReservationTable: React.FC<ReservationTableProps> = ({
                                     <MaintenanceHover
                                       maintenance={maintenance}
                                       startWeek={startWeek}
+                                      onDeleteMaintenance={maintenance =>
+                                        onDeleteMaintenance &&
+                                        onDeleteMaintenance(maintenance)
+                                      }
                                     />
                                   </div>
                                 );
@@ -324,11 +334,14 @@ export const ReservationTable: React.FC<ReservationTableProps> = ({
 export const MaintenanceHover: React.FC<{
   maintenance: Maintenance;
   startWeek: Moment;
-}> = ({ maintenance, startWeek }) => {
+  onDeleteMaintenance: (maintenance: Maintenance) => void;
+}> = ({ maintenance, startWeek, onDeleteMaintenance }) => {
   const classes = useStyles();
   const [show, setShow] = useState<boolean>(false);
   const [coordinate, setCoordinates] = useState<{ x: number; y: number }>();
   const [timer, setTimer] = useState<NodeJS.Timeout>();
+
+  const hoverCardRef = useRef<any>();
 
   return (
     <div
@@ -339,12 +352,14 @@ export const MaintenanceHover: React.FC<{
             setShow(true);
             setCoordinates({
               x:
-                window.innerWidth - event.clientX < 300
-                  ? event.clientX - 300
+                window.innerWidth - event.clientX <
+                hoverCardRef.current.clientWidth + 20
+                  ? event.clientX - hoverCardRef.current.clientWidth + 20
                   : event.clientX,
               y:
-                window.innerHeight - event.clientY < 125
-                  ? event.clientY - 125
+                window.innerHeight - event.clientY <
+                hoverCardRef.current.clientHeight + 20
+                  ? event.clientY - hoverCardRef.current.clientHeight + 20
                   : event.clientY,
             });
           }, 500)
@@ -371,31 +386,38 @@ export const MaintenanceHover: React.FC<{
           Maintenance
         </Typography>
       </div>
-      {show && (
-        <Box
-          position="fixed"
-          top={coordinate?.y}
-          left={coordinate?.x}
-          maxWidth="300px"
-          zIndex="999"
-        >
-          <Paper>
-            <Box padding={1}>
-              <Typography variant="h6">
-                Maintenance: {maintenance.id}
-              </Typography>
-              <Typography variant="body2">
-                From : {moment(maintenance.from).format('DD MMM YYYY')}
-              </Typography>
-              <Typography variant="body2">
-                To : {moment(maintenance.to).format('DD MMM YYYY')}
-              </Typography>
-              <Typography variant="body2">
-                Description : {maintenance.description}
-              </Typography>
-            </Box>
-          </Paper>
-        </Box>
+      <div
+        ref={hoverCardRef}
+        style={{
+          visibility: show ? 'visible' : 'hidden',
+          top: coordinate?.y,
+          left: coordinate?.x,
+          zIndex: 999,
+          maxWidth: '300px',
+          position: 'fixed',
+        }}
+      >
+        <Paper>
+          <Box padding={1}>
+            <Typography variant="h6">Maintenance: {maintenance.id}</Typography>
+            <Typography variant="body2">
+              From : {moment(maintenance.from).format('DD MMM YYYY')}
+            </Typography>
+            <Typography variant="body2">
+              To : {moment(maintenance.to).format('DD MMM YYYY')}
+            </Typography>
+            <Typography variant="body2">
+              Description : {maintenance.description}
+            </Typography>
+            <Button
+              color="secondary"
+              onClick={() => onDeleteMaintenance(maintenance)}
+            >
+              Delete
+            </Button>
+          </Box>
+        </Paper>
+      </div>
       )}
     </div>
   );
@@ -408,6 +430,7 @@ export const ReservationHover: React.FC<{
   const [show, setShow] = useState<boolean>(false);
   const [coordinate, setCoordinates] = useState<{ x: number; y: number }>();
   const [timer, setTimer] = useState<NodeJS.Timeout>();
+  const hoverCardRef = useRef<any>();
 
   return (
     <div
@@ -418,12 +441,14 @@ export const ReservationHover: React.FC<{
             setShow(true);
             setCoordinates({
               x:
-                window.innerWidth - event.clientX < 300
-                  ? event.clientX - 300
+                window.innerWidth - event.clientX <
+                hoverCardRef.current.clientWidth + 20
+                  ? event.clientX - hoverCardRef.current.clientWidth + 20
                   : event.clientX,
               y:
-                window.innerHeight - event.clientY < 125
-                  ? event.clientY - 125
+                window.innerHeight - event.clientY <
+                hoverCardRef.current.clientHeight + 20
+                  ? event.clientY - hoverCardRef.current.clientHeight + 20
                   : event.clientY,
             });
           }, 500)
@@ -454,40 +479,40 @@ export const ReservationHover: React.FC<{
           {reservation.guest.firstname} {reservation.guest.lastname[0]}.
         </Typography>
       </div>
-      {show && (
-        <Box
-          position="fixed"
-          top={coordinate?.y}
-          left={coordinate?.x}
-          maxWidth="300px"
-          zIndex="999"
-        >
-          <Paper>
-            <Box padding={1}>
-              <Typography variant="h6">
-                Reservation: {reservation.id}
-              </Typography>
-              <Typography variant="body2">
-                Duration : {moment(reservation.checkIn).format('DD MMM YYYY')} -{' '}
-                {moment(reservation.checkOut).format('DD MMM YYYY')}
-              </Typography>
-              <Typography variant="body2">
-                Reserver: {reservation.guest.firstname}{' '}
-                {reservation.guest.lastname} ({reservation.guest.email})
-              </Typography>
-              <Typography variant="body2">
-                Rooms : {reservation.rooms.map(e => 'Room ' + e.id).join(', ')}
-              </Typography>
-              <Typography variant="body2">
-                Special Requests : {reservation.specialRequests || '-'}
-              </Typography>
-              <Typography variant="body2">
-                Payment : {reservation.isPaid ? 'Paid' : 'Not Paid'}
-              </Typography>
-            </Box>
-          </Paper>
-        </Box>
-      )}
+      <div
+        ref={hoverCardRef}
+        style={{
+          visibility: show ? 'visible' : 'hidden',
+          top: coordinate?.y,
+          left: coordinate?.x,
+          zIndex: 999,
+          maxWidth: '300px',
+          position: 'fixed',
+        }}
+      >
+        <Paper>
+          <Box padding={1}>
+            <Typography variant="h6">Reservation: {reservation.id}</Typography>
+            <Typography variant="body2">
+              Duration : {moment(reservation.checkIn).format('DD MMM YYYY')} -{' '}
+              {moment(reservation.checkOut).format('DD MMM YYYY')}
+            </Typography>
+            <Typography variant="body2">
+              Reserver: {reservation.guest.firstname}{' '}
+              {reservation.guest.lastname} ({reservation.guest.email})
+            </Typography>
+            <Typography variant="body2">
+              Rooms : {reservation.rooms.map(e => 'Room ' + e.id).join(', ')}
+            </Typography>
+            <Typography variant="body2">
+              Special Requests : {reservation.specialRequests || '-'}
+            </Typography>
+            <Typography variant="body2">
+              Payment : {reservation.isPaid ? 'Paid' : 'Not Paid'}
+            </Typography>
+          </Box>
+        </Paper>
+      </div>
     </div>
   );
 };
@@ -498,5 +523,6 @@ export interface ReservationTableProps {
   maintenances: Maintenance[];
   onChangeDate?: (date: Moment) => void;
   onSelectReservation?: (reservation: ReservationStatusResponse) => void;
+  onDeleteMaintenance?: (maintenance: Maintenance) => void;
   isLoading: boolean;
 }
