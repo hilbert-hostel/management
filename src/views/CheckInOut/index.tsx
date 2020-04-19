@@ -9,8 +9,6 @@ import {
   Box,
   Avatar,
 } from '@material-ui/core';
-import { useHistory } from 'react-router-dom';
-import { useStores } from '../../core/hooks/use-stores';
 import MaterialTable, { MTableToolbar } from 'material-table';
 import { CheckInEntry, CheckOutEntry } from '../../core/models/checkinout';
 import { BackendAPI } from '../../core/repository/api/backend';
@@ -44,8 +42,6 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export const CheckInOut: React.FC = observer(() => {
   const classes = useStyles();
-  const history = useHistory();
-  const { authStore } = useStores();
   const [isLoading, setLoading] = useState(false);
   const [checkIn, setCheckIn] = useState<CheckInEntry[]>([]);
   const [checkOut, setCheckOut] = useState<CheckOutEntry[]>([]);

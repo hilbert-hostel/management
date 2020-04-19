@@ -1,98 +1,26 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   createStyles,
   makeStyles,
   Theme,
-  Typography,
-  Box,
-  Paper,
   Dialog,
   DialogTitle,
   DialogContent,
-  DialogContentText,
   DialogActions,
   Button,
 } from '@material-ui/core';
-import { useHistory } from 'react-router-dom';
-import moment, { Moment } from 'moment';
-import { RoomTypeResult, Room } from '../../../../core/models/room';
-import { ReservationStatusResponse } from '../../../../core/models/reservation';
-
-import IconButton from '@material-ui/core/IconButton';
-import ArrowIcon from '@material-ui/icons/ExpandLess';
-import TodayIcon from '@material-ui/icons/Today';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import { number } from 'yup';
-import { client } from '../../../../core/repository/api/backend';
+import moment from 'moment';
+import { Room } from '../../../../core/models/room';
 import * as Yup from 'yup';
-import {
-  Maintenance,
-  CreateMaintenanceModel,
-} from '../../../../core/models/maintenance';
+import { CreateMaintenanceModel } from '../../../../core/models/maintenance';
 import { useFormik } from 'formik';
 import { FormDatePicker } from '../../../../core/components/Forms/FormDatePicker';
 import { FormText } from '../../../../core/components/Forms/FormText';
 import { FormSelect } from '../../../../core/components/Forms/FormSelect';
-import { roomSearchFormSchema } from '../../../../core/components/RoomSearchForm/schema';
-
-const MAX_DATES = 7;
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    root: {
-      height: '100%',
-      flexGrow: 1,
-      minWidth: 'fit-content',
-      padding: theme.spacing(2),
-    },
-    button: {
-      marginBottom: theme.spacing(2),
-      padding: theme.spacing(2),
-      zIndex: 5,
-    },
-    content: {
-      paddingTop: theme.spacing(3),
-      height: '100%',
-    },
-    table: {
-      display: 'grid',
-      gridAutoFlow: 'row dense', /////
-      minHeight: '40vh',
-      minWidth: 'max(60vw, 1024px)',
-      width: '100%',
-      backgroundColor: theme.palette.divider,
-    },
-    dates: {
-      padding: theme.spacing(1),
-      backgroundColor: theme.palette.background.paper,
-    },
-    box: {
-      border: `1px solid ${theme.palette.divider}`,
-      padding: theme.spacing(1),
-      backgroundColor: theme.palette.background.paper,
-    },
-    reservationBlock: {
-      padding: theme.spacing(0.5),
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      backgroundColor: theme.palette.primary.light,
-      overflow: 'show',
-      color: theme.palette.primary.contrastText,
-      clipPath: 'polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%)',
-    },
-    reservations: {
-      // padding: '5px',
-    },
-    noLeft: {
-      clipPath: 'polygon(0 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%)',
-    },
-    noRight: {
-      clipPath: 'polygon(8px 0%, 100% 0%, 100% 100%, 0% 100%)',
-    },
-    noSlope: {
-      clipPath: 'polygon(0px 0%, 100% 0%, 100% 100%, 0% 100%)',
-    },
+    root: {},
   })
 );
 
@@ -136,7 +64,7 @@ export const NewMaintenanceDialog: React.FC<{
   return (
     <Dialog open={open} onClose={() => handleClose()}>
       <DialogTitle>Add new maintenance</DialogTitle>
-      <DialogContent>
+      <DialogContent className={classes.root}>
         <FormSelect
           id="roomID"
           choices={rooms.map(e => {

@@ -8,7 +8,6 @@ import {
   Paper,
   Button,
 } from '@material-ui/core';
-import { useHistory } from 'react-router-dom';
 import moment, { Moment } from 'moment';
 import { RoomTypeResult } from '../../../../core/models/room';
 import { ReservationStatusResponse } from '../../../../core/models/reservation';
@@ -17,13 +16,7 @@ import IconButton from '@material-ui/core/IconButton';
 import ArrowIcon from '@material-ui/icons/ExpandLess';
 import TodayIcon from '@material-ui/icons/Today';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import { number } from 'yup';
-import { client, BackendAPI } from '../../../../core/repository/api/backend';
 import { Maintenance } from '../../../../core/models/maintenance';
-import { observer } from 'mobx-react-lite';
-import { handleServerError } from '../../../../core/utils/handleServerError';
-import { useStores } from '../../../../core/hooks/use-stores';
-import { red } from '@material-ui/core/colors';
 
 const MAX_DATES = 7;
 
@@ -115,7 +108,6 @@ export const ReservationTable: React.FC<ReservationTableProps> = ({
   isLoading = false,
 }) => {
   const classes = useStyles();
-  const history = useHistory();
 
   const getCoordinate = (from: Date, to: Date) => {
     const start =

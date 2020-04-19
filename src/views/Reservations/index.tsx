@@ -4,7 +4,6 @@ import {
   createStyles,
   makeStyles,
   Theme,
-  Container,
   Typography,
   Button,
   Box,
@@ -16,7 +15,6 @@ import {
   DialogContentText,
   DialogActions,
 } from '@material-ui/core';
-import { useHistory } from 'react-router-dom';
 import { useStores } from '../../core/hooks/use-stores';
 import { ReservationTable } from './components/ReservationTable';
 import { BackendAPI } from '../../core/repository/api/backend';
@@ -59,7 +57,6 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export const Reservations: React.FC = observer(() => {
   const classes = useStyles();
-  const history = useHistory();
   const { snackbarStore } = useStores();
   const [isLoading, setLoading] = useState(false);
   const [date, setDate] = useState(moment().startOf('isoWeek'));

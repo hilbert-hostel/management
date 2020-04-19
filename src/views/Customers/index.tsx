@@ -5,14 +5,9 @@ import {
   makeStyles,
   Theme,
   Container,
-  Typography,
   Box,
-  AppBar,
-  Toolbar,
   Avatar,
 } from '@material-ui/core';
-import { useHistory } from 'react-router-dom';
-import { useStores } from '../../core/hooks/use-stores';
 import MaterialTable from 'material-table';
 import { BackendAPI } from '../../core/repository/api/backend';
 import { orange } from '@material-ui/core/colors';
@@ -43,8 +38,6 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export const Customers: React.FC = observer(() => {
   const classes = useStyles();
-  const history = useHistory();
-  const { authStore } = useStores();
   const [data, setData] = useState();
 
   useEffect(() => {

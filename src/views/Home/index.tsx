@@ -6,11 +6,8 @@ import {
   Theme,
   Container,
   Typography,
-  Button,
   Box,
 } from '@material-ui/core';
-import { useHistory } from 'react-router-dom';
-import { useStores } from '../../core/hooks/use-stores';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -38,8 +35,6 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export const Home: React.FC = observer(() => {
   const classes = useStyles();
-  const history = useHistory();
-  const { authStore } = useStores();
   return (
     <Box
       className={classes.root}

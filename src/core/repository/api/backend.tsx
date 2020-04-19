@@ -1,14 +1,7 @@
 import { AxiosClient } from './axios';
-import { RegistrationModel } from '../../models/registration';
 import { AuthPayload, LoginModel } from '../../models/auth';
-import { RoomSearchPayload } from '../../models/search';
 import { RoomTypeResult } from '../../models/room';
-import {
-  ReservationPayload,
-  ReservationResponse,
-  ReservationStatusResponse,
-  ReservationPaymentStatusResponse,
-} from '../../models/reservation';
+import { ReservationStatusResponse } from '../../models/reservation';
 import { User } from '../../models/user';
 import { CheckInOutResponse } from '../../models/checkinout';
 import {

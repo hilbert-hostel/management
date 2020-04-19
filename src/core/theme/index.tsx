@@ -1,5 +1,5 @@
 import { ThemeOptions } from '@material-ui/core/styles/createMuiTheme';
-import { orange, yellow, blue } from '@material-ui/core/colors';
+import { orange, blue } from '@material-ui/core/colors';
 
 export const themeConfig: ThemeOptions = {
   overrides: {

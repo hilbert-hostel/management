@@ -5,7 +5,6 @@ import {
   makeStyles,
   Theme,
   Container,
-  Typography,
   Button,
   Box,
   Dialog,
@@ -15,7 +14,6 @@ import {
   DialogActions,
   CircularProgress,
 } from '@material-ui/core';
-import { useHistory } from 'react-router-dom';
 import { useStores } from '../../core/hooks/use-stores';
 import { BackendAPI } from '../../core/repository/api/backend';
 import MaterialTable from 'material-table';
@@ -55,7 +53,6 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export const DoorUnlock: React.FC = observer(() => {
   const classes = useStyles();
-  const history = useHistory();
   const { themeStore, snackbarStore } = useStores();
   const [rooms, setRooms] = useState<Room[]>([]);
   const [selectedRoom, setSelectedRoom] = useState<Room>();
