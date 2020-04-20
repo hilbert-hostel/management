@@ -83,15 +83,10 @@ export const DoorUnlock: React.FC = observer(() => {
         setQR(
           await qrcode.toDataURL(res.data.code, {
             errorCorrectionLevel: 'M',
-            color: themeStore.dark
-              ? {
-                  dark: '#FFF',
-                  light: '#0000',
-                }
-              : {
-                  dark: '#000',
-                  light: '#0000',
-                },
+            color: {
+              dark: '#000',
+              light: '#FFF',
+            },
           })
         );
       });
