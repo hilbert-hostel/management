@@ -32,8 +32,8 @@ export class BackendAPI {
     return client.get<RoomTypeResult[]>('/admin/room');
   }
 
-  static checkInOut() {
-    return client.get<CheckInOutResponse>('/admin/checkIn');
+  static checkInOut(params: { from: string; to: string }) {
+    return client.get<CheckInOutResponse>('/admin/checkIn', { params });
   }
 
   static reservations(params: { from: string; to: string }) {
@@ -59,7 +59,7 @@ export class BackendAPI {
   }
 
   static openDoor(roomID: number) {
-    return client.post('/admin/unlock', { params: { roomID } });
+    return client.post('/admin/unlock', { roomID });
   }
 
   static generateMasterKey() {

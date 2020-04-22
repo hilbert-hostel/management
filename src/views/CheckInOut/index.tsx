@@ -48,7 +48,12 @@ export const CheckInOut: React.FC = observer(() => {
 
   useEffect(() => {
     setLoading(true);
-    BackendAPI.checkInOut().then(res => {
+    BackendAPI.checkInOut({
+      from: moment().format('YYYY-MM-DD'),
+      to: moment()
+        .add(6, 'days')
+        .format('YYYY-MM-DD'),
+    }).then(res => {
       setLoading(false);
       const { checkIn, checkOut } = res.data;
       setCheckIn(checkIn);
