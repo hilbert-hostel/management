@@ -11,6 +11,24 @@ export interface CheckInEntry {
   nights: number;
   beds: number;
   checkInTime: Moment;
+  record: Record;
+}
+
+export interface Record {
+  idCardData: {
+    address: string;
+    birthdate: Date;
+    expireDate: Date;
+    gender: string;
+    idCardPhoto: string;
+    issueDate: Date;
+    issuer: string;
+    nameEN: string;
+    nameTH: string;
+    nationalID: string;
+    photo: string;
+  };
+  photo: string;
 }
 
 export interface CheckOutEntry {

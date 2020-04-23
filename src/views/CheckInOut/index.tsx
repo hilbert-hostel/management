@@ -7,10 +7,19 @@ import {
   Container,
   Typography,
   Box,
+  Button,
   Avatar,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from '@material-ui/core';
 import MaterialTable, { MTableToolbar } from 'material-table';
-import { CheckInEntry, CheckOutEntry } from '../../core/models/checkinout';
+import {
+  CheckInEntry,
+  CheckOutEntry,
+  Record,
+} from '../../core/models/checkinout';
 import { BackendAPI } from '../../core/repository/api/backend';
 import moment from 'moment';
 import CircularProgress from '@material-ui/core/CircularProgress';
@@ -45,6 +54,7 @@ export const CheckInOut: React.FC = observer(() => {
   const [isLoading, setLoading] = useState(false);
   const [checkIn, setCheckIn] = useState<CheckInEntry[]>([]);
   const [checkOut, setCheckOut] = useState<CheckOutEntry[]>([]);
+  const [record, setRecord] = useState<Record>();
 
   useEffect(() => {
     setLoading(true);
@@ -126,6 +136,17 @@ export const CheckInOut: React.FC = observer(() => {
                   <>{moment(data.checkInTime).format('DD/MM/YYYY HH:mm')}</>
                 ),
               },
+              {
+                title: 'Check In Record',
+                render: data => (
+                  <Button
+                    color="primary"
+                    onClick={() => setRecord(data.record)}
+                  >
+                    View Record
+                  </Button>
+                ),
+              },
             ]}
             data={checkIn}
             title="Check In"
@@ -186,7 +207,6 @@ export const CheckInOut: React.FC = observer(() => {
                   <>{moment(data.checkOutTime).format('DD/MM/YYYY HH:mm')}</>
                 ),
               },
-              { title: 'Phone', field: 'phone' },
             ]}
             data={checkOut}
             title="Check Out"
@@ -198,6 +218,37 @@ export const CheckInOut: React.FC = observer(() => {
           <br />
         </Container>
       </Box>
+      <Dialog open={!!record} onClose={() => setRecord(undefined)}>
+        <DialogTitle id="alert-dialog-title">Check-In Record</DialogTitle>
+        <DialogContent>
+          <Typography variant="body1">
+            ID: {record?.idCardData.nationalID}
+          </Typography>
+          <Typography variant="body1">
+            Full Name (TH): {record?.idCardData.nameTH}
+          </Typography>
+          <Typography variant="body1">
+            Full Name (EN): {record?.idCardData.nameEN}
+          </Typography>
+          <Typography variant="body1">
+            Address: {record?.idCardData.address}
+          </Typography>
+          <Typography variant="body1">
+            Gender: {record?.idCardData.gender}
+          </Typography>
+          <Box display="flex" justifyContent="center" flexDirection="column">
+            <Typography variant="body1">ID card photo</Typography>
+            <img src={record?.idCardData.idCardPhoto} alt="id card" />
+            <Typography variant="body1">Card photo</Typography>
+            <img src={record?.idCardData.photo} alt="check in kiosk" />
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setRecord(undefined)} color="primary">
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 });
