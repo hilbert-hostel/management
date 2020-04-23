@@ -240,7 +240,7 @@ export const CheckInOut: React.FC = observer(() => {
             <Typography variant="body1">ID card photo</Typography>
             <img src={record?.idCardData.idCardPhoto} alt="id card" />
             <Typography variant="body1">Card photo</Typography>
-            <img src={record?.idCardData.photo} alt="check in kiosk" />
+            <img src={record?.photo} alt="check in kiosk" />
           </Box>
         </DialogContent>
         <DialogActions>
