@@ -46,6 +46,11 @@ const useStyles = makeStyles((theme: Theme) =>
       paddingTop: theme.spacing(3),
       height: '100%',
     },
+    images: {
+      justifySelf: 'center',
+      width: 'auto',
+      maxHeight: '200px',
+    },
   })
 );
 
@@ -236,11 +241,27 @@ export const CheckInOut: React.FC = observer(() => {
           <Typography variant="body1">
             Gender: {record?.idCardData.gender}
           </Typography>
-          <Box display="flex" justifyContent="center" flexDirection="column">
-            <Typography variant="body1">ID card photo</Typography>
-            <img src={record?.idCardData.idCardPhoto} alt="id card" />
-            <Typography variant="body1">Card photo</Typography>
-            <img src={record?.photo} alt="check in kiosk" />
+          <Box
+            display="flex"
+            justifyContent="space-between"
+            flexDirection="row"
+          >
+            <Box padding={1}>
+              <Typography variant="body1">ID card photo</Typography>
+              <img
+                className={classes.images}
+                src={record?.idCardData.idCardPhoto}
+                alt="id card"
+              />
+            </Box>
+            <Box padding={2}>
+              <Typography variant="body1">Check-In photo</Typography>
+              <img
+                className={classes.images}
+                src={record?.photo}
+                alt="check in kiosk"
+              />
+            </Box>
           </Box>
         </DialogContent>
         <DialogActions>
