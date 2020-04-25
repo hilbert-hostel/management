@@ -42,6 +42,12 @@ export class BackendAPI {
     });
   }
 
+  static summary(params: { from: string; to: string }) {
+    return client.get<{ revenue: number; guests: number; utilization: number }>(
+      '/admin/summary',
+      { params }
+    );
+  }
   static guests() {
     return client.get<User[]>('/admin/guest');
   }
