@@ -210,7 +210,18 @@ export const ReservationTable: React.FC<ReservationTableProps> = ({
                         gridColumnEnd: i + 3,
                       }}
                     >
-                      <Typography variant="body1" align="center">
+                      <Typography
+                        variant="body1"
+                        align="center"
+                        color={
+                          moment()
+                            .startOf('day')
+                            .diff(startWeek.clone().add(i, 'days'), 'days') ===
+                          0
+                            ? 'primary'
+                            : 'initial'
+                        }
+                      >
                         {startWeek
                           .clone()
                           .add(i, 'days')
@@ -492,7 +503,10 @@ export const ReservationHover: React.FC<{
             </Typography>
             <Typography variant="body2">
               Beds :{' '}
-              {reservation.rooms.find(r => r.id === room.id)?.beds.length}
+              {reservation.rooms
+                .find(r => r.id === room.id)
+                ?.beds.map(e => e.id)
+                .join(', ')}
             </Typography>
             <Typography variant="body2">
               Reserver: {reservation.guest.firstname}{' '}
@@ -507,6 +521,16 @@ export const ReservationHover: React.FC<{
             <Typography variant="body2">
               Payment : {reservation.isPaid ? 'Paid' : 'Not Paid'}
             </Typography>
+            {reservation.checkIn && (
+              <Typography variant="body2">
+                Checked-in at : {moment(reservation.checkIn).toString()}
+              </Typography>
+            )}
+            {reservation.checkOut && (
+              <Typography variant="body2">
+                Checked-out at : {moment(reservation.checkOut).toString()}
+              </Typography>
+            )}
           </Box>
         </Paper>
       </div>

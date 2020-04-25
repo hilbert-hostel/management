@@ -18,6 +18,7 @@ import { FormText } from '../../core/components/Forms/FormText';
 import { LoginModel } from '../../core/models/auth';
 import { loginSchema } from './schema';
 import { useQuery } from '../../core/hooks/use-query';
+import { handleServerError } from '../../core/utils/handleServerError';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -75,26 +76,7 @@ export const Login: React.FC = observer(() => {
         authStore.setUser(res.data.user);
         history.push(query.get('returnTo') || '/');
       } catch (error) {
-        switch (error.response.status) {
-          case 400:
-            snackbarStore.sendMessage({
-              type: 'error',
-              message: 'Username or password is incorrect',
-            });
-            break;
-          case 500:
-            snackbarStore.sendMessage({
-              type: 'error',
-              message: 'Something went wrong',
-            });
-            break;
-          default:
-            snackbarStore.sendMessage({
-              type: 'error',
-              message: "Can't connect to server",
-            });
-            break;
-        }
+        handleServerError(error, snackbarStore);
       }
     },
   });

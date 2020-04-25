@@ -26,7 +26,7 @@ import { useStores } from '../../hooks/use-stores';
 import { CustomLink } from '../CustomLink';
 import { useHistory } from 'react-router-dom';
 
-const drawerWidth = 280;
+export const drawerWidth = 280;
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
