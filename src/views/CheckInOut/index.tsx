@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { observer } from 'mobx-react-lite';
 import {
   createStyles,
@@ -24,6 +24,8 @@ import { BackendAPI } from '../../core/repository/api/backend';
 import moment from 'moment';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { orange } from '@material-ui/core/colors';
+import { waifuContext } from '../../core/contexts/waifuContext';
+import { useStores } from '../../core/hooks/use-stores';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -56,10 +58,12 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export const CheckInOut: React.FC = observer(() => {
   const classes = useStyles();
+  const { themeStore } = useStores();
   const [isLoading, setLoading] = useState(false);
   const [checkIn, setCheckIn] = useState<CheckInEntry[]>([]);
   const [checkOut, setCheckOut] = useState<CheckOutEntry[]>([]);
   const [record, setRecord] = useState<Record>();
+  const { images } = useContext(waifuContext);
 
   useEffect(() => {
     setLoading(true);
@@ -125,6 +129,16 @@ export const CheckInOut: React.FC = observer(() => {
                           backgroundColor: orange[300],
                           marginRight: '8px',
                         }}
+                        src={
+                          themeStore.dark
+                            ? images[
+                                (row.guest.firstname.length +
+                                  row.guest.lastname.length +
+                                  row.guest.email.length) %
+                                  images.length
+                              ]
+                            : undefined
+                        }
                       >
                         {row.guest.firstname.toUpperCase()[0]}
                       </Avatar>
@@ -196,6 +210,16 @@ export const CheckInOut: React.FC = observer(() => {
                           backgroundColor: orange[300],
                           marginRight: '8px',
                         }}
+                        src={
+                          themeStore.dark
+                            ? images[
+                                (row.guest.firstname.length +
+                                  row.guest.lastname.length +
+                                  row.guest.email.length) %
+                                  images.length
+                              ]
+                            : undefined
+                        }
                       >
                         {row.guest.firstname.toUpperCase()[0]}
                       </Avatar>

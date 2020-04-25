@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import Drawer from '@material-ui/core/Drawer';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -26,6 +26,7 @@ import { observer } from 'mobx-react-lite';
 import { useStores } from '../../hooks/use-stores';
 import { CustomLink } from '../CustomLink';
 import { useHistory } from 'react-router-dom';
+import { waifuContext } from '../../contexts/waifuContext';
 
 export const drawerWidth = 280;
 
@@ -58,8 +59,6 @@ const useStyles = makeStyles((theme: Theme) =>
       height: '60px',
       width: '60px',
       marginRight: theme.spacing(2),
-      paddingTop: theme.spacing(4),
-      paddingBottom: theme.spacing(4),
     },
     logoutButton: {
       padding: theme.spacing(2),
@@ -79,6 +78,7 @@ export const PermanentDrawer = observer(() => {
   const { authStore, themeStore } = useStores();
   const user = authStore.user;
   const history = useHistory();
+  const { images } = useContext(waifuContext);
 
   const logout = () => {
     authStore.logout();
@@ -107,7 +107,19 @@ export const PermanentDrawer = observer(() => {
         marginBottom={2}
         padding={2}
       >
-        <Avatar className={classes.yellow}>
+        <Avatar
+          className={classes.yellow}
+          src={
+            themeStore.dark && user
+              ? images[
+                  (user.firstname.length +
+                    user.lastname.length +
+                    user.email.length) %
+                    images.length
+                ]
+              : undefined
+          }
+        >
           {user?.firstname && user?.firstname[0]}
           {user?.lastname && user?.lastname[0]}
         </Avatar>
