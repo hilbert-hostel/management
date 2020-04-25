@@ -9,6 +9,7 @@ import PersonIcon from '@material-ui/icons/Person';
 import CalendarIcon from '@material-ui/icons/CalendarToday';
 import CheckInIcon from '@material-ui/icons/HowToReg';
 import DoorIcon from '@material-ui/icons/MeetingRoom';
+import HouseIcon from '@material-ui/icons/House';
 import {
   makeStyles,
   createStyles,
@@ -121,6 +122,20 @@ export const PermanentDrawer = observer(() => {
         <List>
           <ListItem
             button
+            key="home"
+            className={
+              history.location.pathname === '/' ? classes.selected : ''
+            }
+          >
+            <CustomLink to="/">
+              <ListItemIcon>
+                <HouseIcon />
+              </ListItemIcon>
+              <ListItemText color="primary" primary="Home" />
+            </CustomLink>
+          </ListItem>
+          <ListItem
+            button
             key="customer"
             className={
               history.location.pathname === '/customers' ? classes.selected : ''
@@ -130,7 +145,7 @@ export const PermanentDrawer = observer(() => {
               <ListItemIcon>
                 <PersonIcon />
               </ListItemIcon>
-              <ListItemText color="pirmary" primary="Customer" />
+              <ListItemText color="primary" primary="Customer" />
             </CustomLink>
           </ListItem>
           <ListItem
